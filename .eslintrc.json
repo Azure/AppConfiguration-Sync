@@ -1,0 +1,44 @@
+{
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": "./tsconfig.json"
+  },
+  "plugins": ["@typescript-eslint"],
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "env": {
+    "node": true,
+    "es6": true
+  },
+  "rules": {
+    "curly": ["error", "multi-line"],
+    "eol-last": ["error", "always"],
+    "eqeqeq": ["error", "always", { "null": "ignore" }],
+    "no-console": "off",
+    "no-redeclare": ["error", { "builtinGlobals": true }],
+    "no-return-await": "error",
+    "no-unsafe-finally": "error",
+    "no-unused-expressions": "error",
+    "no-use-before-define": ["error", { "functions": false, "classes": false }],
+    "no-var": "error",
+    "one-var-declaration-per-line": "error",
+    "prefer-const": "error",
+    "spaced-comment": ["error", "always", { "markers": ["/"] }],
+    "space-infix-ops": ["error"],
+    "use-isnan": "error",
+    "@typescript-eslint/class-name-casing": "error",
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/explicit-function-return-type": [
+      "warn",
+      { "allowExpressions": true, "allowTypedFunctionExpressions": true }
+    ],
+    "@typescript-eslint/interface-name-prefix": ["error", "never"],
+    "@typescript-eslint/no-unused-vars": "warn",
+    "@typescript-eslint/no-useless-constructor": "error",
+    "@typescript-eslint/no-use-before-define": "off",
+    "@typescript-eslint/no-var-requires": "off"
+  }
+}

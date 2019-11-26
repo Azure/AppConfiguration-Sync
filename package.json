@@ -1,0 +1,36 @@
+{
+  "name": "syncConfig",
+  "private": true,
+  "scripts": {
+    "build": "ncc build src\\main.ts -m -o lib",
+    "lint": "eslint src/**/*.ts",
+    "lint:fix": "eslint src/**/*.ts --fix",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@actions/core": "^1.2.0",
+    "@azure/app-configuration": "^1.0.0-preview.7",
+    "@types/flat": "0.0.28",
+    "@types/glob": "^7.1.1",
+    "@types/js-yaml": "^3.12.1",
+    "@types/lodash": "^4.14.148",
+    "@types/node": "^12.12.6",
+    "@types/statuses": "^1.5.0",
+    "dot-properties": "^0.3.2",
+    "flat": "^5.0.0",
+    "glob": "^7.1.6",
+    "js-yaml": "^3.13.1",
+    "lodash": "^4.17.15",
+    "statuses": "^1.5.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^24.0.23",
+    "@typescript-eslint/eslint-plugin": "^2.9.0",
+    "@typescript-eslint/parser": "^2.9.0",
+    "@zeit/ncc": "^0.20.5",
+    "eslint": "^6.7.1",
+    "jest": "^24.9.0",
+    "ts-jest": "^24.1.0",
+    "typescript": "^3.7.2"
+  }
+}
