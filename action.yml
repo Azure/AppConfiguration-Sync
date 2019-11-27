@@ -1,26 +1,26 @@
-name: 'SyncConfig'
-description: 'Sync configuration in the repo to a config store'
+name: 'Sync Configuration'
+description: 'Sync configuration in the repo to an App Configuration instance'
 inputs:
-  configFile:
-    description: 'Path to the config file in the repo, relative to the repo root.  Also supports glob patterns and multiple files'
+  configurationFile:
+    description: 'Path to the configuration file in the repo, relative to the repo root. Also supports glob patterns and multiple files'
     required: true
   format:
-    description: 'Format of the config file.  Valid values are: json, yaml, properties'
+    description: 'Format of the configuration file. Valid values are: json, yaml, properties'
     required: true
   connectionString:
-    description: 'Connection string for the target config store'
+    description: 'Connection string for the App Configuration instance'
     required: true
   separator:
     description: 'Separator used when flattening the configuration object to key-value pairs'
     required: true
   strict:
-    description: 'Specifies whether to use a strict sync which will make the target config store exactly match the config file (deleting key-values not in the config file)'
+    description: 'Specifies whether to use a strict sync which will make the App Configuration instance exactly match the configuration file (deleting key-values not in the configuration file)'
     required: true
   prefix:
     description: 'Prefix that will be added to the front of the keys'
     required: false
   label:
-    description: 'Label to use when setting the key-value pairs.  If not specified, a null label will be used'
+    description: 'Label to use when setting the key-value pairs. If not specified, a null label will be used'
     required: false
   depth:
     description: 'Max depth (positive number) for flattening the configuration object'

@@ -31,7 +31,7 @@ export interface Tags {
 export function getInput(): Input {
     return {
         workspace:          getWorkspace(),
-        configFile:         getRequiredInputString('configFile'),
+        configFile:         getRequiredInputString('configurationFile'),
         format:             getFormat(),
         connectionString:   getConnectionString(),
         separator:          getSeparator(),
@@ -78,7 +78,7 @@ function getConnectionString(): string {
     const connectionString = getRequiredInputString('connectionString');
 
     if (!connectionString.match(/Endpoint=(.*);Id=(.*);Secret=(.*)/)) {
-        throw new Error(`Connection string '${connectionString}' is invalid. It should be structured as: Endpoint=https://{config store name}.azconfig.io;Id=<credential>;Secret=<secret>`);
+        throw new Error(`Connection string is invalid.`);
     }
 
     return connectionString;
@@ -134,7 +134,7 @@ function getTags(): Tags | undefined {
         const value = parsedTags[key];
 
         if (typeof value !== "string") {
-            core.error(`Tag property value '${key}' should be a string: '${JSON.stringify(value)}'`);
+            core.error(`Tag property value '${key}' should be a string.`);
             error = true;
         }
     }

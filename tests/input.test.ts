@@ -10,7 +10,7 @@ jest.mock('@actions/core', () => {
             const input = mockInput[name];
            
             if (!input && options && options.required) {
-                throw new Error(`Input missing: ${name}'`);
+                throw new Error(`Input missing: ${name}`);
             }
 
             return input;
@@ -27,7 +27,7 @@ describe('input', () => {
 
     function getDefaultInput() {
         return {
-            configFile: "defaultConfigFile",
+            configurationFile: "defaultConfigFile",
             format: "json",
             connectionString: "Endpoint=https://default.azconfig.io;Id=default;Secret=default",
             separator: ":",
@@ -56,17 +56,17 @@ describe('input', () => {
         expect(() => getInput()).toThrow();
     })
 
-    it('validation succeeds with configFile', () => {
+    it('validation succeeds with configurationFile', () => {
         mockInput = getDefaultInput();
-        mockInput.configFile = "configFile";
+        mockInput.configurationFile = "configFile";
 
         const input = getInput();
         expect(input.configFile).toBe("configFile");
     })
     
-    it('validation fails if configFile is missing', () => {
+    it('validation fails if configurationFile is missing', () => {
         mockInput = getDefaultInput();
-        mockInput.configFile = undefined;
+        mockInput.configurationFile = undefined;
 
         expect(() => getInput()).toThrow();
     })

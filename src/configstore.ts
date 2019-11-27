@@ -27,8 +27,8 @@ export async function syncConfig(config: any, connectionString: string, strict: 
     if (failedDeletes.length > 0 || failedAdds.length > 0) {
 
         const errorMessage = (failedDeletes.length === settingsToDelete.length && failedAdds.length === settingsToAdd.length) ?
-            "Sync config failed." :
-            "Sync config partially succeeded.";
+            "Configuration sync failed." :
+            "Configuration sync partially succeeded.";
 
         // Using setFailed to fail the entire action
         core.setFailed(errorMessage);
@@ -115,5 +115,5 @@ function processError(error: any, description: string): string {
 }
 
 function getLabel(setting: ConfigurationSettingId): string {
-    return setting.label || "(No label)";
+    return setting.label || "";
 }

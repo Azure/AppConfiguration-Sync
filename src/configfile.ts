@@ -30,7 +30,7 @@ export enum ConfigFormat {
 export async function loadConfigFiles(root: string, pattern: string, format: ConfigFormat, separator: string, depth?: number): Promise<any> {
     const files = await glob(pattern, { cwd: root, root: root, absolute: true });
     if (files.length === 0) {
-        throw new Error(`No config files found`);
+        throw new Error(`No configuration files found`);
     }
 
     const configs = [];
@@ -57,6 +57,6 @@ async function parseConfigFile(file: string, format: ConfigFormat): Promise<any>
         case ConfigFormat.Properties:
             return dotproperties.parse(data);
         default:
-            throw new Error(`Invalid config format specified: ${format}`)
+            throw new Error(`Invalid configuration format specified: ${format}`)
     }
 }
