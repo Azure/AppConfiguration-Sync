@@ -89,7 +89,7 @@ function getSeparator(): string {
     const validSeparators = ['.', ',', ';', '-', '_', '__', '/', ':'];
 
     if (!validSeparators.includes(separator)) {
-        throw new Error(`Separator '${separator}' is invalid. Allowed values are: '.', ',', ';', '-', '_', '__', '/', ':'`);
+        throw new Error(`Separator '${separator}' is invalid. Allowed values are: ${validSeparators.map(s => `'${s}'`).join(", ")}`);
     }
 
     return separator;
