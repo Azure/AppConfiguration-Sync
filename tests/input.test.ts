@@ -117,6 +117,14 @@ describe('input', () => {
         expect(input.connectionString).toBe("Endpoint=https://example.azconfig.io;Id=Id;Secret=Secret");
     })
 
+    it('validation succeeds with connectionString with different segment order', () => {
+        mockInput = getDefaultInput();
+        mockInput.connectionString = "Secret=Secret;Id=Id;Endpoint=https://example.azconfig.io";
+
+        const input = getInput();
+        expect(input.connectionString).toBe("Secret=Secret;Id=Id;Endpoint=https://example.azconfig.io");
+    })
+
     it('validation fails if connectionString is missing', () => {
         mockInput = getDefaultInput();
         mockInput.connectionString = undefined;
@@ -127,6 +135,34 @@ describe('input', () => {
     it('validation fails if connectionString is invalid', () => {
         mockInput = getDefaultInput();
         mockInput.connectionString = "invalid";
+
+        expect(() => getInput()).toThrow();
+    })
+
+    it('validation fails if connectionString has invalid segment', () => {
+        mockInput = getDefaultInput();
+        mockInput.connectionString = "Endpoint=https://example.azconfig.io;Id=Id;Unknown=Other";
+
+        expect(() => getInput()).toThrow();
+    })
+
+    it('validation fails if connectionString is missing EndPoint', () => {
+        mockInput = getDefaultInput();
+        mockInput.connectionString = "Id=Id;Secret=Secret";
+
+        expect(() => getInput()).toThrow();
+    })
+
+    it('validation fails if connectionString is missing Id', () => {
+        mockInput = getDefaultInput();
+        mockInput.connectionString = "Endpoint=https://example.azconfig.io;Secret=Secret";
+
+        expect(() => getInput()).toThrow();
+    })
+
+    it('validation fails if connectionString is missing Secret', () => {
+        mockInput = getDefaultInput();
+        mockInput.connectionString = "Endpoint=https://example.azconfig.io;Id=Id";
 
         expect(() => getInput()).toThrow();
     })

@@ -77,7 +77,28 @@ function getFormat(): ConfigFormat {
 function getConnectionString(): string {
     const connectionString = getRequiredInputString('connectionString');
 
-    if (!connectionString.match(/Endpoint=(.*);Id=(.*);Secret=(.*)/)) {
+    const segments = connectionString.split(";");
+    let valid = false;
+
+    if (segments.length === 3) {
+        let hasEndpoint = false;
+        let hasId = false;
+        let hasSecret = false;
+
+        for (const segment of segments) {
+            if (segment.startsWith('Endpoint=')) {
+                hasEndpoint = true;
+            } else if (segment.startsWith('Id=')) {
+                hasId = true;
+            } else if (segment.startsWith('Secret=')) {
+                hasSecret = true;
+            }
+        }
+        
+        valid = hasEndpoint && hasId && hasSecret;
+    }
+
+    if (!valid) {
         throw new Error(`Connection string is invalid.`);
     }
 
