@@ -1,4 +1,6 @@
 import * as core from '@actions/core';
+
+import { ArgumentError } from '../src/errors';
 import { ConfigFormat } from '../src/configfile';
 import { getInput } from '../src/input'
 
@@ -14,6 +16,8 @@ jest.mock('@actions/core', () => {
             }
 
             return input;
+        }),
+        error: jest.fn((message: string) => {
         })
     };
 });
@@ -53,7 +57,7 @@ describe('input', () => {
         delete process.env.GITHUB_WORKSPACE;
         mockInput = getDefaultInput();
 
-        expect(() => getInput()).toThrow();
+        expect(() => getInput()).toThrowError(ArgumentError);
     })
 
     it('validation succeeds with configurationFile', () => {
@@ -68,7 +72,7 @@ describe('input', () => {
         mockInput = getDefaultInput();
         mockInput.configurationFile = undefined;
 
-        expect(() => getInput()).toThrow();
+        expect(() => getInput()).toThrowError(ArgumentError);
     })
     
     it('validation succeeds with format: json', () => {
@@ -99,14 +103,14 @@ describe('input', () => {
         mockInput = getDefaultInput();
         mockInput.format = undefined;
 
-        expect(() => getInput()).toThrow();
+        expect(() => getInput()).toThrowError(ArgumentError);
     })
 
     it('validation fails if format is invalid', () => {
         mockInput = getDefaultInput();
         mockInput.format = "invalid";
 
-        expect(() => getInput()).toThrow();
+        expect(() => getInput()).toThrowError(ArgumentError);
     })
 
     it('validation succeeds with connectionString', () => {
@@ -129,42 +133,42 @@ describe('input', () => {
         mockInput = getDefaultInput();
         mockInput.connectionString = undefined;
     
-        expect(() => getInput()).toThrow();
+        expect(() => getInput()).toThrowError(ArgumentError);
     })
 
     it('validation fails if connectionString is invalid', () => {
         mockInput = getDefaultInput();
         mockInput.connectionString = "invalid";
 
-        expect(() => getInput()).toThrow();
+        expect(() => getInput()).toThrowError(ArgumentError);
     })
 
     it('validation fails if connectionString has invalid segment', () => {
         mockInput = getDefaultInput();
         mockInput.connectionString = "Endpoint=https://example.azconfig.io;Id=Id;Unknown=Other";
 
-        expect(() => getInput()).toThrow();
+        expect(() => getInput()).toThrowError(ArgumentError);
     })
 
     it('validation fails if connectionString is missing EndPoint', () => {
         mockInput = getDefaultInput();
         mockInput.connectionString = "Id=Id;Secret=Secret";
 
-        expect(() => getInput()).toThrow();
+        expect(() => getInput()).toThrowError(ArgumentError);
     })
 
     it('validation fails if connectionString is missing Id', () => {
         mockInput = getDefaultInput();
         mockInput.connectionString = "Endpoint=https://example.azconfig.io;Secret=Secret";
 
-        expect(() => getInput()).toThrow();
+        expect(() => getInput()).toThrowError(ArgumentError);
     })
 
     it('validation fails if connectionString is missing Secret', () => {
         mockInput = getDefaultInput();
         mockInput.connectionString = "Endpoint=https://example.azconfig.io;Id=Id";
 
-        expect(() => getInput()).toThrow();
+        expect(() => getInput()).toThrowError(ArgumentError);
     })
 
     it('validation succeeds with separator: .', () => {
@@ -203,14 +207,14 @@ describe('input', () => {
         mockInput = getDefaultInput();
         mockInput.separator = undefined;
 
-        expect(() => getInput()).toThrow();
+        expect(() => getInput()).toThrowError(ArgumentError);
     })
 
     it('validation fails if separator is invalid', () => {
         mockInput = getDefaultInput();
         mockInput.separator = "invalid";
 
-        expect(() => getInput()).toThrow();
+        expect(() => getInput()).toThrowError(ArgumentError);
     })
 
     it('validation succeeds with strict: true', () => {
@@ -233,14 +237,14 @@ describe('input', () => {
         mockInput = getDefaultInput();
         mockInput.strict = undefined;
 
-        expect(() => getInput()).toThrow();
+        expect(() => getInput()).toThrowError(ArgumentError);
     })
 
     it('validation fails if strict is invalid', () => {
         mockInput = getDefaultInput();
         mockInput.strict = "invalid";
 
-        expect(() => getInput()).toThrow();
+        expect(() => getInput()).toThrowError(ArgumentError);
     })
 
     it('validation succeeds with missing prefix', () => {
@@ -295,35 +299,42 @@ describe('input', () => {
         mockInput = getDefaultInput();
         mockInput.depth = "invalid";
 
-        expect(() => getInput()).toThrow();
+        expect(() => getInput()).toThrowError(ArgumentError);
     })
 
     it('validation fails with negative depth', () => {
         mockInput = getDefaultInput();
         mockInput.depth = "-4";
 
-        expect(() => getInput()).toThrow();
+        expect(() => getInput()).toThrowError(ArgumentError);
     })
     
     it('validation fails with zero depth', () => {
         mockInput = getDefaultInput();
         mockInput.depth = "0";
 
-        expect(() => getInput()).toThrow();
+        expect(() => getInput()).toThrowError(ArgumentError);
+    })
+
+    it('validation fails with tag JSON', () => {
+        mockInput = getDefaultInput();
+        mockInput.tags = "{";
+
+        expect(() => getInput()).toThrowError(ArgumentError);
     })
 
     it('validation fails with invalid tags', () => {
         mockInput = getDefaultInput();
         mockInput.tags = JSON.stringify({ A: { B: "foo" } });
 
-        expect(() => getInput()).toThrow();
+        expect(() => getInput()).toThrowError(ArgumentError);
     })
 
     it('validation fails with multiple invalid tags', () => {
         mockInput = getDefaultInput();
         mockInput.tags = JSON.stringify({ A: { B: "foo" }, C: "foo", D: { E: "foo" } });
 
-        expect(() => getInput()).toThrow();
+        expect(() => getInput()).toThrowError(ArgumentError);
     })
 
     it('validation succeeds with missing tags', () => {

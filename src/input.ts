@@ -1,6 +1,7 @@
 import * as core from '@actions/core';
 
 import { ConfigFormat } from './configfile';
+import { ArgumentError } from './errors';
 
 /**
  * Represents the inputs to the GitHub action
@@ -44,7 +45,12 @@ export function getInput(): Input {
 }
 
 function getRequiredInputString(name: string): string {
-    return core.getInput(name, { required: true });
+    const input = getNonRequiredInputString(name);
+    if (!input) {
+        throw new ArgumentError(`Required input is missing: ${name}`);
+    }
+
+    return input;
 }
 
 function getNonRequiredInputString(name: string): string | undefined {
@@ -54,7 +60,7 @@ function getNonRequiredInputString(name: string): string | undefined {
 function getWorkspace(): string {
     const workspace = process.env.GITHUB_WORKSPACE;
     if (!workspace) {
-        throw new Error('Run environment is missing GITHUB_WORKSPACE variable');
+        throw new ArgumentError('Run environment is missing GITHUB_WORKSPACE variable');
     }
 
     return workspace;
@@ -70,7 +76,7 @@ function getFormat(): ConfigFormat {
         case "properties":
             return ConfigFormat.Properties;
         default:
-            throw new Error(`Format '${format}' is invalid. Allowed values are: json, yaml, properties`);
+            throw new ArgumentError(`Format '${format}' is invalid. Allowed values are: json, yaml, properties`);
     }
 }
 
@@ -99,7 +105,7 @@ function getConnectionString(): string {
     }
 
     if (!valid) {
-        throw new Error(`Connection string is invalid.`);
+        throw new ArgumentError(`Connection string is invalid.`);
     }
 
     return connectionString;
@@ -110,7 +116,7 @@ function getSeparator(): string {
     const validSeparators = ['.', ',', ';', '-', '_', '__', '/', ':'];
 
     if (!validSeparators.includes(separator)) {
-        throw new Error(`Separator '${separator}' is invalid. Allowed values are: ${validSeparators.map(s => `'${s}'`).join(", ")}`);
+        throw new ArgumentError(`Separator '${separator}' is invalid. Allowed values are: ${validSeparators.map(s => `'${s}'`).join(", ")}`);
     }
 
     return separator;
@@ -123,7 +129,7 @@ function getStrict(): boolean {
     } else if (strict === "false") {
         return false;
     } else {
-        throw new Error(`Strict '${strict}' is invalid. Allowed values are: true, false`);
+        throw new ArgumentError(`Strict '${strict}' is invalid. Allowed values are: true, false`);
     }   
 }
 
@@ -135,7 +141,7 @@ function getDepth(): number | undefined {
     
     const parsedDepth = parseInt(depth);
     if (isNaN(parsedDepth) || parsedDepth < 1) {
-        throw new Error(`Depth '${depth}' is invalid. Depth should be a positive number.`);
+        throw new ArgumentError(`Depth '${depth}' is invalid. Depth should be a positive number.`);
     }
 
     return parsedDepth;
@@ -148,8 +154,15 @@ function getTags(): Tags | undefined {
     }
 
     let error = false;
-    const parsedTags = JSON.parse(tags);
+    
+    let parsedTags: any;
 
+    try {
+        parsedTags = JSON.parse(tags);
+    } catch (error) {
+        throw new ArgumentError('Failed to parse tags as JSON.');
+    }
+    
     // Verify the structure of the parsed tags (string properties only)
     for (const key of Object.keys(parsedTags)) {
         const value = parsedTags[key];
@@ -161,7 +174,7 @@ function getTags(): Tags | undefined {
     }
 
     if (error) {
-        throw new Error(`Tags are invalid. Tags should only contain string properties: ${tags}`)
+        throw new ArgumentError(`Tags are invalid. Tags should only contain string properties: ${tags}`)
     }
 
     return parsedTags;

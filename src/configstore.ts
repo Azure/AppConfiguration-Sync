@@ -1,8 +1,8 @@
 import * as core from '@actions/core';
 import { AppConfigurationClient, ConfigurationSettingId, SetConfigurationSettingParam } from '@azure/app-configuration';
 
+import { getErrorMessage } from './errors';
 import { Tags } from './input';
-import { logError, getErrorMessage } from './util';
 
 /**
  * Sync from a config object to a config store
@@ -17,6 +17,7 @@ import { logError, getErrorMessage } from './util';
 export async function syncConfig(config: any, connectionString: string, strict: boolean, label?: string, prefix?: string, tags?: Tags): Promise<void> {
     const client = new AppConfigurationClient(connectionString);
 
+    core.info('Determining which keys to sync');
     const settingsToAdd = getSettingsToAdd(config, label, prefix, tags);
     const settingsToDelete = strict ? await getSettingsToDelete(client, settingsToAdd, label, prefix) : [];
 
@@ -81,10 +82,10 @@ async function addSettings(client: AppConfigurationClient, settings: SetConfigur
 
     for (const setting of settings) {
         try {
-            console.log(`Adding key '${setting.key}' with label '${getLabel(setting)}'.`);
+            core.info(`Adding key '${setting.key}' with label '${getLabel(setting)}'.`);
             await client.setConfigurationSetting(setting);
         } catch (error) {
-             errorMessages.push(processError(error, `Failed to add key '${setting.key}' with label '${getLabel(setting)}'.`));
+             errorMessages.push(getErrorMessage(error, `Failed to add key '${setting.key}' with label '${getLabel(setting)}'.`));
         }
     }
 
@@ -96,22 +97,14 @@ async function deleteSettings(client: AppConfigurationClient, settings: Configur
 
     for (const setting of settings) {
         try {
-            console.log(`Deleting key '${setting.key}' with label '${getLabel(setting)}'.`);
+            core.info(`Deleting key '${setting.key}' with label '${getLabel(setting)}'.`);
             await client.deleteConfigurationSetting(setting);
         } catch (error) {          
-            errorMessages.push(processError(error, `Failed to delete key '${setting.key}' with label '${getLabel(setting)}'.`));
+            errorMessages.push(getErrorMessage(error, `Failed to delete key '${setting.key}' with label '${getLabel(setting)}'.`));
         }
     }
 
     return errorMessages;
-}
-
-function processError(error: any, description: string): string {
-    const errorMessage = getErrorMessage(error, description);
-    console.log(errorMessage);
-    logError(error);
-
-    return errorMessage;
 }
 
 function getLabel(setting: ConfigurationSettingId): string {
