@@ -1,4 +1,4 @@
-# "Azure App Configuration Sync
+# Azure App Configuration Sync
 
 This action syncs configuration files in the repository to an App Configuration instance. This enables scenarios where the App Configuration instance is automatically updated when changes are made through GitHub workflows.
 
