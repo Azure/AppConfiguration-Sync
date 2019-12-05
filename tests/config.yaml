@@ -1,0 +1,11 @@
+Key1: Value 1
+Outer:
+  Key2: Value 2
+  Inner:
+    Key3: Value 3
+    Key4: Value 4
+Array:
+  - A: 1
+    B: 2
+  - C: 3
+    D: 4
