@@ -1,4 +1,4 @@
-name: '"Azure App Configuration Sync'
+name: 'Azure App Configuration Sync'
 description: 'Sync configuration in the repo to an App Configuration instance'
 inputs:
   configurationFile:
