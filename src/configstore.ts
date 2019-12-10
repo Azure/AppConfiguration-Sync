@@ -64,8 +64,8 @@ async function getSettingsToDelete(client: AppConfigurationClient, settingsToAdd
     const keysToIgnore = new Set(settingsToAdd.map(e => e.key));
     
     const filterOptions = {
-        keys: prefix ? [prefix + "*"] : undefined,
-        labels: label ? [label] : undefined,
+        keyFilter: prefix ? prefix + "*" : undefined,
+        labelFilter: label ? label : "\0",
     };
 
     for await (const setting of client.listConfigurationSettings(filterOptions)) {

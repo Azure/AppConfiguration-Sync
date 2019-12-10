@@ -48,7 +48,7 @@ describe('syncConfig', () => {
     })
 
     it('adds setting while leaving existing setting alone', async () => {
-        setListConfigurationSettingsMock({ key: "Key2", value: "Value2", readOnly: false });
+        setListConfigurationSettingsMock({ key: "Key2", value: "Value2", isReadOnly: false });
 
         const config = { "Key1": "Value1" };
         await configstore.syncConfig(config, "connection string", false);
@@ -63,8 +63,8 @@ describe('syncConfig', () => {
     })
 
     it('changes setting', async () => {
-        const setting1 = { key: "Key1", value: "Value1", readOnly: false };
-        const setting2 = { key: "Key2", value: "Value2", readOnly: false };
+        const setting1 = { key: "Key1", value: "Value1", isReadOnly: false };
+        const setting2 = { key: "Key2", value: "Value2", isReadOnly: false };
         setListConfigurationSettingsMock(setting1, setting2);
 
         const config = { "Key1": "New Value" };
@@ -80,7 +80,7 @@ describe('syncConfig', () => {
     })
 
     it('adds setting in strict mode', async () => {
-        const setting = { key: "DeletedKey", value: "DeletedValue", readOnly: false };
+        const setting = { key: "DeletedKey", value: "DeletedValue", isReadOnly: false };
         setListConfigurationSettingsMock(setting);
 
         const config = { "Key1": "Value1" };
@@ -88,7 +88,7 @@ describe('syncConfig', () => {
 
         expect(AppConfigurationClient).toBeCalled();
         expect(AppConfigurationClient.prototype.listConfigurationSettings).toHaveBeenCalledTimes(1);
-        expect(AppConfigurationClient.prototype.listConfigurationSettings).toHaveBeenCalledWith({});
+        expect(AppConfigurationClient.prototype.listConfigurationSettings).toHaveBeenCalledWith({ labelFilter: "\0" });
         expect(AppConfigurationClient.prototype.deleteConfigurationSetting).toHaveBeenCalledTimes(1);
         expect(AppConfigurationClient.prototype.deleteConfigurationSetting).toHaveBeenCalledWith(setting);
         expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenCalledTimes(1);
@@ -98,8 +98,8 @@ describe('syncConfig', () => {
     })
 
     it('changes setting in strict mode', async () => {
-        const setting1 = { key: "DeletedKey", value: "DeletedValue", readOnly: false };
-        const setting2 = { key: "Key1", value: "Value1", readOnly: false };
+        const setting1 = { key: "DeletedKey", value: "DeletedValue", isReadOnly: false };
+        const setting2 = { key: "Key1", value: "Value1", isReadOnly: false };
         setListConfigurationSettingsMock(setting1, setting2);
 
         const config = { "Key1": "New Value" };
@@ -107,7 +107,7 @@ describe('syncConfig', () => {
 
         expect(AppConfigurationClient).toBeCalled();
         expect(AppConfigurationClient.prototype.listConfigurationSettings).toHaveBeenCalledTimes(1);
-        expect(AppConfigurationClient.prototype.listConfigurationSettings).toHaveBeenCalledWith({});
+        expect(AppConfigurationClient.prototype.listConfigurationSettings).toHaveBeenCalledWith({ labelFilter: "\0" });
         expect(AppConfigurationClient.prototype.deleteConfigurationSetting).toHaveBeenCalledTimes(1);
         expect(AppConfigurationClient.prototype.deleteConfigurationSetting).toHaveBeenCalledWith(setting1);
         expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenCalledTimes(1);
@@ -117,9 +117,9 @@ describe('syncConfig', () => {
     })
 
     it('adds setting with label', async () => {
-        const setting1 = { key: "Key1", value: "Value1", readOnly: false };
-        const setting2 = { key: "Key1", value: "Value2", label: "Label1", readOnly: false };
-        const setting3 = { key: "Key2", value: "Value3", label: "Label2", readOnly: false };
+        const setting1 = { key: "Key1", value: "Value1", isReadOnly: false };
+        const setting2 = { key: "Key1", value: "Value2", label: "Label1", isReadOnly: false };
+        const setting3 = { key: "Key2", value: "Value3", label: "Label2", isReadOnly: false };
         setListConfigurationSettingsMock(setting1, setting2, setting3);
 
         let config = { "Key1": "New Value" };
@@ -135,10 +135,10 @@ describe('syncConfig', () => {
     })
 
     it('changes setting with label in strict mode', async () => {
-        const setting1 = { key: "Key1", value: "Value1", readOnly: false };
-        const setting2 = { key: "Key1", value: "Value2", label: "Label1", readOnly: false };
-        const setting3 = { key: "Key1", value: "Value3", label: "Label2", readOnly: false };
-        const setting4 = { key: "Key2", value: "Value4", label: "Label2", readOnly: false };
+        const setting1 = { key: "Key1", value: "Value1", isReadOnly: false };
+        const setting2 = { key: "Key1", value: "Value2", label: "Label1", isReadOnly: false };
+        const setting3 = { key: "Key1", value: "Value3", label: "Label2", isReadOnly: false };
+        const setting4 = { key: "Key2", value: "Value4", label: "Label2", isReadOnly: false };
         setListConfigurationSettingsMock(setting1, setting2, setting3, setting4);
 
         let config = { "Key1": "New Value" };
@@ -146,7 +146,7 @@ describe('syncConfig', () => {
 
         expect(AppConfigurationClient).toBeCalled();
         expect(AppConfigurationClient.prototype.listConfigurationSettings).toHaveBeenCalledTimes(1);
-        expect(AppConfigurationClient.prototype.listConfigurationSettings).toHaveBeenCalledWith({ labels: ["Label2"] });
+        expect(AppConfigurationClient.prototype.listConfigurationSettings).toHaveBeenCalledWith({ labelFilter: "Label2" });
         expect(AppConfigurationClient.prototype.deleteConfigurationSetting).toHaveBeenCalledTimes(1);
         expect(AppConfigurationClient.prototype.deleteConfigurationSetting).toHaveBeenCalledWith(setting4);
         expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenCalledTimes(1);
@@ -156,8 +156,8 @@ describe('syncConfig', () => {
     })
 
     it('adds setting with prefix', async () => {
-        const setting1 = { key: "Key1", value: "Value1", readOnly: false };
-        const setting2 = { key: "prefix::Key2", value: "Value2", readOnly: false };
+        const setting1 = { key: "Key1", value: "Value1", isReadOnly: false };
+        const setting2 = { key: "prefix::Key2", value: "Value2", isReadOnly: false };
         setListConfigurationSettingsMock(setting1, setting2);
 
         let config = { "Key1": "New Value" };
@@ -173,7 +173,7 @@ describe('syncConfig', () => {
     })
 
     it('adds setting with prefix in strict mode', async () => {
-        const setting = { key: "prefix::Key2", value: "Value2", readOnly: false };
+        const setting = { key: "prefix::Key2", value: "Value2", isReadOnly: false };
         setListConfigurationSettingsMock(setting);
 
         let config = { "Key1": "New Value" };
@@ -181,7 +181,7 @@ describe('syncConfig', () => {
 
         expect(AppConfigurationClient).toBeCalled();
         expect(AppConfigurationClient.prototype.listConfigurationSettings).toHaveBeenCalledTimes(1);
-        expect(AppConfigurationClient.prototype.listConfigurationSettings).toHaveBeenCalledWith({ keys: ["prefix::*"] });
+        expect(AppConfigurationClient.prototype.listConfigurationSettings).toHaveBeenCalledWith({ keyFilter: "prefix::*", labelFilter: "\0" });
         expect(AppConfigurationClient.prototype.deleteConfigurationSetting).toHaveBeenCalledTimes(1);
         expect(AppConfigurationClient.prototype.deleteConfigurationSetting).toHaveBeenCalledWith(setting);
         expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenCalledTimes(1);
@@ -191,10 +191,10 @@ describe('syncConfig', () => {
     })
 
     it('changes setting with prefix and label', async () => {
-        const setting1 = { key: "prefix::Key1", value: "Value1", readOnly: false };
-        const setting2 = { key: "prefix::Key1", value: "Value2", label: "Label", readOnly: false };
-        const setting3 = { key: "prefix::Key2", value: "Value3", readOnly: false };
-        const setting4 = { key: "prefix::Key2", value: "Value4", label: "Label", readOnly: false };
+        const setting1 = { key: "prefix::Key1", value: "Value1", isReadOnly: false };
+        const setting2 = { key: "prefix::Key1", value: "Value2", label: "Label", isReadOnly: false };
+        const setting3 = { key: "prefix::Key2", value: "Value3", isReadOnly: false };
+        const setting4 = { key: "prefix::Key2", value: "Value4", label: "Label", isReadOnly: false };
         setListConfigurationSettingsMock(setting1, setting2, setting3, setting4);
 
         let config = { "Key1": "New Value" };
@@ -210,8 +210,8 @@ describe('syncConfig', () => {
     })
 
     it('changes setting with prefix and label in strict mode', async () => {
-        const setting1 = { key: "prefix::Key1", value: "Value1", label: "Label", readOnly: false };
-        const setting2 = { key: "prefix::Key2", value: "Value2", label: "Label", readOnly: false }
+        const setting1 = { key: "prefix::Key1", value: "Value1", label: "Label", isReadOnly: false };
+        const setting2 = { key: "prefix::Key2", value: "Value2", label: "Label", isReadOnly: false }
         setListConfigurationSettingsMock(setting1, setting2);
 
         let config = { "Key1": "New Value" };
@@ -219,7 +219,7 @@ describe('syncConfig', () => {
 
         expect(AppConfigurationClient).toBeCalled();
         expect(AppConfigurationClient.prototype.listConfigurationSettings).toHaveBeenCalledTimes(1);
-        expect(AppConfigurationClient.prototype.listConfigurationSettings).toHaveBeenCalledWith({ keys: ["prefix::*"], labels: ["Label"] });
+        expect(AppConfigurationClient.prototype.listConfigurationSettings).toHaveBeenCalledWith({ keyFilter: "prefix::*", labelFilter: "Label" });
         expect(AppConfigurationClient.prototype.deleteConfigurationSetting).toHaveBeenCalledTimes(1);
         expect(AppConfigurationClient.prototype.deleteConfigurationSetting).toHaveBeenCalledWith(setting2);
         expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenCalledTimes(1);
@@ -242,7 +242,7 @@ describe('syncConfig', () => {
     })
 
     it('change setting with tags', async () => {
-        setListConfigurationSettingsMock({ key: "Key1", value: "Value1", readOnly: false });
+        setListConfigurationSettingsMock({ key: "Key1", value: "Value1", isReadOnly: false });
 
         let config = { "Key1": "New Value" };
         await configstore.syncConfig(config, "connection string", false, undefined, undefined, { foo: "bar" });
@@ -285,7 +285,7 @@ describe('syncConfig', () => {
             throw new RestError("<message>", undefined, 409);
         });
 
-        const setting = { key: "DeletedKey", value: "DeletedValue", label: "test", readOnly: false};
+        const setting = { key: "DeletedKey", value: "DeletedValue", label: "test", isReadOnly: false};
         setListConfigurationSettingsMock(setting);
 
         const config = { "Key1": "Value1" };
@@ -293,7 +293,7 @@ describe('syncConfig', () => {
 
         expect(AppConfigurationClient).toBeCalled();
         expect(AppConfigurationClient.prototype.listConfigurationSettings).toHaveBeenCalledTimes(1);
-        expect(AppConfigurationClient.prototype.listConfigurationSettings).toHaveBeenCalledWith({ labels: ["test"] });
+        expect(AppConfigurationClient.prototype.listConfigurationSettings).toHaveBeenCalledWith({ labelFilter: "test" });
         expect(AppConfigurationClient.prototype.deleteConfigurationSetting).toHaveBeenCalledTimes(1);
         expect(AppConfigurationClient.prototype.deleteConfigurationSetting).toHaveBeenCalledWith(setting);
         expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenCalledTimes(1);
@@ -309,7 +309,7 @@ describe('syncConfig', () => {
             throw new RestError("<message>", undefined, 409);
         });
 
-        const setting = { key: "DeletedKey", value: "DeletedValue", readOnly: false };
+        const setting = { key: "DeletedKey", value: "DeletedValue", isReadOnly: false };
         setListConfigurationSettingsMock(setting);
 
         const config = { "Key1": "Value1" };
@@ -317,7 +317,7 @@ describe('syncConfig', () => {
 
         expect(AppConfigurationClient).toBeCalled();
         expect(AppConfigurationClient.prototype.listConfigurationSettings).toHaveBeenCalledTimes(1);
-        expect(AppConfigurationClient.prototype.listConfigurationSettings).toHaveBeenCalledWith({});
+        expect(AppConfigurationClient.prototype.listConfigurationSettings).toHaveBeenCalledWith({ labelFilter: "\0" });
         expect(AppConfigurationClient.prototype.deleteConfigurationSetting).toHaveBeenCalledTimes(1);
         expect(AppConfigurationClient.prototype.deleteConfigurationSetting).toHaveBeenCalledWith(setting);
         expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenCalledTimes(1);
