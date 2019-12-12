@@ -1,5 +1,6 @@
 import * as core from '@actions/core';
 import { AppConfigurationClient, ConfigurationSettingId, SetConfigurationSettingParam } from '@azure/app-configuration';
+import { generateUuid, OperationOptions } from "@azure/core-http";
 
 import { getErrorMessage } from './errors';
 import { Tags } from './input';
@@ -50,7 +51,7 @@ function getSettingsToAdd(config: any, label?: string, prefix?: string, tags?: T
     for (const key in config) {      
         settings.push({
             key: prefix ? prefix + key : key,
-            value: config[key],
+            value: getStringValue(config[key]),
             label: label ? label : undefined,
             tags: tags ? tags : undefined,
         });
@@ -59,16 +60,27 @@ function getSettingsToAdd(config: any, label?: string, prefix?: string, tags?: T
     return settings;
 }
 
+function getStringValue(value: any): string {
+    if (!value) {
+        return "";
+    } else if (typeof value === "object") {
+        return JSON.stringify(value);
+    } else {
+        return String(value);
+    }
+}
+
 async function getSettingsToDelete(client: AppConfigurationClient, settingsToAdd: SetConfigurationSettingParam[], label?: string, prefix?: string): Promise<ConfigurationSettingId[]> {
     const settings: ConfigurationSettingId[] = [];
     const keysToIgnore = new Set(settingsToAdd.map(e => e.key));
     
-    const filterOptions = {
+    const listOptions = {
         keyFilter: prefix ? prefix + "*" : undefined,
         labelFilter: label ? label : "\0",
+        ...getOperationOptions(),
     };
 
-    for await (const setting of client.listConfigurationSettings(filterOptions)) {
+    for await (const setting of client.listConfigurationSettings(listOptions)) {
         if (!keysToIgnore.has(setting.key)) {
             settings.push(setting);
         }
@@ -83,9 +95,9 @@ async function addSettings(client: AppConfigurationClient, settings: SetConfigur
     for (const setting of settings) {
         try {
             core.info(`Adding key '${setting.key}' with label '${getLabel(setting)}'.`);
-            await client.setConfigurationSetting(setting);
+            await client.setConfigurationSetting(setting, getOperationOptions());
         } catch (error) {
-             errorMessages.push(getErrorMessage(error, `Failed to add key '${setting.key}' with label '${getLabel(setting)}'.`));
+            errorMessages.push(getErrorMessage(error, `Failed to add key '${setting.key}' with label '${getLabel(setting)}'.`));
         }
     }
 
@@ -98,7 +110,7 @@ async function deleteSettings(client: AppConfigurationClient, settings: Configur
     for (const setting of settings) {
         try {
             core.info(`Deleting key '${setting.key}' with label '${getLabel(setting)}'.`);
-            await client.deleteConfigurationSetting(setting);
+            await client.deleteConfigurationSetting(setting, getOperationOptions());
         } catch (error) {          
             errorMessages.push(getErrorMessage(error, `Failed to delete key '${setting.key}' with label '${getLabel(setting)}'.`));
         }
@@ -109,4 +121,14 @@ async function deleteSettings(client: AppConfigurationClient, settings: Configur
 
 function getLabel(setting: ConfigurationSettingId): string {
     return setting.label || "";
+}
+
+function getOperationOptions(): OperationOptions {
+    return {
+        requestOptions: {
+            customHeaders: {
+                "x-ms-client-request-id": generateUuid()
+            }
+        }
+    };
 }

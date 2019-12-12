@@ -1,7 +1,7 @@
 import * as core from '@actions/core';
 import { AppConfigurationClient, ConfigurationSetting, ListConfigurationSettingsOptions } from '@azure/app-configuration';
 import { PageSettings } from '@azure/core-paging';
-import { RestError } from '@azure/core-http';
+import { OperationOptions, RestError } from '@azure/core-http';
 
 import * as configstore from '../src/configstore';
 
@@ -24,7 +24,7 @@ describe('syncConfig', () => {
         expect(AppConfigurationClient.prototype.listConfigurationSettings).not.toBeCalled();
         expect(AppConfigurationClient.prototype.deleteConfigurationSetting).not.toBeCalled();
         expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenCalledTimes(1);
-        expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenCalledWith({ key: "Key1", value: "Value1" });
+        expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenCalledWith({ key: "Key1", value: "Value1" }, getExpectedOptions());
         expect(core.setFailed).not.toBeCalled();
         expect(core.error).not.toBeCalled();
     })
@@ -41,8 +41,8 @@ describe('syncConfig', () => {
         expect(AppConfigurationClient.prototype.listConfigurationSettings).not.toBeCalled();
         expect(AppConfigurationClient.prototype.deleteConfigurationSetting).not.toBeCalled();
         expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenCalledTimes(2);
-        expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenNthCalledWith(1, { key: "Key1", value: "Value1" });
-        expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenNthCalledWith(2, { key: "Key2", value: "Value2" });
+        expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenNthCalledWith(1, { key: "Key1", value: "Value1" }, getExpectedOptions());
+        expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenNthCalledWith(2, { key: "Key2", value: "Value2" }, getExpectedOptions());
         expect(core.setFailed).not.toBeCalled();
         expect(core.error).not.toBeCalled();
     })
@@ -57,7 +57,7 @@ describe('syncConfig', () => {
         expect(AppConfigurationClient.prototype.listConfigurationSettings).not.toBeCalled();
         expect(AppConfigurationClient.prototype.deleteConfigurationSetting).not.toBeCalled();
         expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenCalledTimes(1);
-        expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenCalledWith({ key: "Key1", value: "Value1" });
+        expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenCalledWith({ key: "Key1", value: "Value1" }, getExpectedOptions());
         expect(core.setFailed).not.toBeCalled();
         expect(core.error).not.toBeCalled();
     })
@@ -74,7 +74,7 @@ describe('syncConfig', () => {
         expect(AppConfigurationClient.prototype.listConfigurationSettings).not.toBeCalled();
         expect(AppConfigurationClient.prototype.deleteConfigurationSetting).not.toBeCalled();
         expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenCalledTimes(1);
-        expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenCalledWith({ key: "Key1", value: "New Value" });
+        expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenCalledWith({ key: "Key1", value: "New Value" }, getExpectedOptions());
         expect(core.setFailed).not.toBeCalled();
         expect(core.error).not.toBeCalled();
     })
@@ -88,11 +88,11 @@ describe('syncConfig', () => {
 
         expect(AppConfigurationClient).toBeCalled();
         expect(AppConfigurationClient.prototype.listConfigurationSettings).toHaveBeenCalledTimes(1);
-        expect(AppConfigurationClient.prototype.listConfigurationSettings).toHaveBeenCalledWith({ labelFilter: "\0" });
+        expect(AppConfigurationClient.prototype.listConfigurationSettings).toHaveBeenCalledWith({ labelFilter: "\0", ...getExpectedOptions() });
         expect(AppConfigurationClient.prototype.deleteConfigurationSetting).toHaveBeenCalledTimes(1);
-        expect(AppConfigurationClient.prototype.deleteConfigurationSetting).toHaveBeenCalledWith(setting);
+        expect(AppConfigurationClient.prototype.deleteConfigurationSetting).toHaveBeenCalledWith(setting, getExpectedOptions());
         expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenCalledTimes(1);
-        expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenCalledWith({ key: "Key1", value: "Value1" });
+        expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenCalledWith({ key: "Key1", value: "Value1" }, getExpectedOptions());
         expect(core.setFailed).not.toBeCalled();
         expect(core.error).not.toBeCalled();
     })
@@ -107,11 +107,11 @@ describe('syncConfig', () => {
 
         expect(AppConfigurationClient).toBeCalled();
         expect(AppConfigurationClient.prototype.listConfigurationSettings).toHaveBeenCalledTimes(1);
-        expect(AppConfigurationClient.prototype.listConfigurationSettings).toHaveBeenCalledWith({ labelFilter: "\0" });
+        expect(AppConfigurationClient.prototype.listConfigurationSettings).toHaveBeenCalledWith({ labelFilter: "\0", ...getExpectedOptions() });
         expect(AppConfigurationClient.prototype.deleteConfigurationSetting).toHaveBeenCalledTimes(1);
-        expect(AppConfigurationClient.prototype.deleteConfigurationSetting).toHaveBeenCalledWith(setting1);
+        expect(AppConfigurationClient.prototype.deleteConfigurationSetting).toHaveBeenCalledWith(setting1, getExpectedOptions());
         expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenCalledTimes(1);
-        expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenCalledWith({ key: "Key1", value: "New Value" });
+        expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenCalledWith({ key: "Key1", value: "New Value" }, getExpectedOptions());
         expect(core.setFailed).not.toBeCalled();
         expect(core.error).not.toBeCalled();
     })
@@ -129,7 +129,7 @@ describe('syncConfig', () => {
         expect(AppConfigurationClient.prototype.listConfigurationSettings).not.toBeCalled();
         expect(AppConfigurationClient.prototype.deleteConfigurationSetting).not.toBeCalled();
         expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenCalledTimes(1);
-        expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenCalledWith({ key: "Key1", value: "New Value", label: "Label2" });
+        expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenCalledWith({ key: "Key1", value: "New Value", label: "Label2" }, getExpectedOptions());
         expect(core.setFailed).not.toBeCalled();
         expect(core.error).not.toBeCalled();
     })
@@ -146,11 +146,11 @@ describe('syncConfig', () => {
 
         expect(AppConfigurationClient).toBeCalled();
         expect(AppConfigurationClient.prototype.listConfigurationSettings).toHaveBeenCalledTimes(1);
-        expect(AppConfigurationClient.prototype.listConfigurationSettings).toHaveBeenCalledWith({ labelFilter: "Label2" });
+        expect(AppConfigurationClient.prototype.listConfigurationSettings).toHaveBeenCalledWith({ labelFilter: "Label2", ...getExpectedOptions() });
         expect(AppConfigurationClient.prototype.deleteConfigurationSetting).toHaveBeenCalledTimes(1);
-        expect(AppConfigurationClient.prototype.deleteConfigurationSetting).toHaveBeenCalledWith(setting4);
+        expect(AppConfigurationClient.prototype.deleteConfigurationSetting).toHaveBeenCalledWith(setting4, getExpectedOptions());
         expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenCalledTimes(1);
-        expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenCalledWith({ key: "Key1", value: "New Value", label: "Label2" });
+        expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenCalledWith({ key: "Key1", value: "New Value", label: "Label2" }, getExpectedOptions());
         expect(core.setFailed).not.toBeCalled();
         expect(core.error).not.toBeCalled();
     })
@@ -167,7 +167,7 @@ describe('syncConfig', () => {
         expect(AppConfigurationClient.prototype.listConfigurationSettings).not.toBeCalled();
         expect(AppConfigurationClient.prototype.deleteConfigurationSetting).not.toBeCalled();
         expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenCalledTimes(1);
-        expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenCalledWith({ key: "prefix::Key1", value: "New Value" });
+        expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenCalledWith({ key: "prefix::Key1", value: "New Value" }, getExpectedOptions());
         expect(core.setFailed).not.toBeCalled();
         expect(core.error).not.toBeCalled();
     })
@@ -181,11 +181,11 @@ describe('syncConfig', () => {
 
         expect(AppConfigurationClient).toBeCalled();
         expect(AppConfigurationClient.prototype.listConfigurationSettings).toHaveBeenCalledTimes(1);
-        expect(AppConfigurationClient.prototype.listConfigurationSettings).toHaveBeenCalledWith({ keyFilter: "prefix::*", labelFilter: "\0" });
+        expect(AppConfigurationClient.prototype.listConfigurationSettings).toHaveBeenCalledWith({ keyFilter: "prefix::*", labelFilter: "\0", ...getExpectedOptions() });
         expect(AppConfigurationClient.prototype.deleteConfigurationSetting).toHaveBeenCalledTimes(1);
-        expect(AppConfigurationClient.prototype.deleteConfigurationSetting).toHaveBeenCalledWith(setting);
+        expect(AppConfigurationClient.prototype.deleteConfigurationSetting).toHaveBeenCalledWith(setting, getExpectedOptions());
         expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenCalledTimes(1);
-        expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenCalledWith({ key: "prefix::Key1", value: "New Value" });
+        expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenCalledWith({ key: "prefix::Key1", value: "New Value" }, getExpectedOptions());
         expect(core.setFailed).not.toBeCalled();
         expect(core.error).not.toBeCalled();
     })
@@ -204,7 +204,7 @@ describe('syncConfig', () => {
         expect(AppConfigurationClient.prototype.listConfigurationSettings).not.toBeCalled();
         expect(AppConfigurationClient.prototype.deleteConfigurationSetting).not.toBeCalled();
         expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenCalledTimes(1);
-        expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenCalledWith({ key: "prefix::Key1", value: "New Value", label: "Label" });
+        expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenCalledWith({ key: "prefix::Key1", value: "New Value", label: "Label" }, getExpectedOptions());
         expect(core.setFailed).not.toBeCalled();
         expect(core.error).not.toBeCalled();
     })
@@ -219,11 +219,11 @@ describe('syncConfig', () => {
 
         expect(AppConfigurationClient).toBeCalled();
         expect(AppConfigurationClient.prototype.listConfigurationSettings).toHaveBeenCalledTimes(1);
-        expect(AppConfigurationClient.prototype.listConfigurationSettings).toHaveBeenCalledWith({ keyFilter: "prefix::*", labelFilter: "Label" });
+        expect(AppConfigurationClient.prototype.listConfigurationSettings).toHaveBeenCalledWith({ keyFilter: "prefix::*", labelFilter: "Label", ...getExpectedOptions() });
         expect(AppConfigurationClient.prototype.deleteConfigurationSetting).toHaveBeenCalledTimes(1);
-        expect(AppConfigurationClient.prototype.deleteConfigurationSetting).toHaveBeenCalledWith(setting2);
+        expect(AppConfigurationClient.prototype.deleteConfigurationSetting).toHaveBeenCalledWith(setting2, getExpectedOptions());
         expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenCalledTimes(1);
-        expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenCalledWith({ key: "prefix::Key1", value: "New Value", label: "Label" });
+        expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenCalledWith({ key: "prefix::Key1", value: "New Value", label: "Label" }, getExpectedOptions());
         expect(core.setFailed).not.toBeCalled();
         expect(core.error).not.toBeCalled();
     })
@@ -236,7 +236,7 @@ describe('syncConfig', () => {
         expect(AppConfigurationClient.prototype.listConfigurationSettings).not.toBeCalled();
         expect(AppConfigurationClient.prototype.deleteConfigurationSetting).not.toBeCalled();
         expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenCalledTimes(1);
-        expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenCalledWith({ key: "Key1", value: "New Value", tags: { foo: "bar" } });
+        expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenCalledWith({ key: "Key1", value: "New Value", tags: { foo: "bar" } }, getExpectedOptions());
         expect(core.setFailed).not.toBeCalled();
         expect(core.error).not.toBeCalled();
     })
@@ -251,7 +251,7 @@ describe('syncConfig', () => {
         expect(AppConfigurationClient.prototype.listConfigurationSettings).not.toBeCalled();
         expect(AppConfigurationClient.prototype.deleteConfigurationSetting).not.toBeCalled();
         expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenCalledTimes(1);
-        expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenCalledWith({ key: "Key1", value: "New Value", tags: { foo: "bar" } });
+        expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenCalledWith({ key: "Key1", value: "New Value", tags: { foo: "bar" } }, getExpectedOptions());
         expect(core.setFailed).not.toBeCalled();
         expect(core.error).not.toBeCalled();
     })
@@ -268,8 +268,8 @@ describe('syncConfig', () => {
         expect(AppConfigurationClient.prototype.listConfigurationSettings).not.toBeCalled();
         expect(AppConfigurationClient.prototype.deleteConfigurationSetting).not.toBeCalled();
         expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenCalledTimes(2);
-        expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenNthCalledWith(1, { key: "Key1", value: "Value1" });
-        expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenNthCalledWith(2, { key: "Key2", value: "Value2" });
+        expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenNthCalledWith(1, { key: "Key1", value: "Value1" }, getExpectedOptions());
+        expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenNthCalledWith(2, { key: "Key2", value: "Value2" }, getExpectedOptions());
         expect(core.setFailed).toBeCalledWith("Configuration sync failed.");
         expect(core.error).toHaveBeenCalledTimes(2);
         expect(core.error).toHaveBeenNthCalledWith(1, "Failed to add key 'Key1' with label ''. Status code: 401 Unauthorized");
@@ -293,11 +293,11 @@ describe('syncConfig', () => {
 
         expect(AppConfigurationClient).toBeCalled();
         expect(AppConfigurationClient.prototype.listConfigurationSettings).toHaveBeenCalledTimes(1);
-        expect(AppConfigurationClient.prototype.listConfigurationSettings).toHaveBeenCalledWith({ labelFilter: "test" });
+        expect(AppConfigurationClient.prototype.listConfigurationSettings).toHaveBeenCalledWith({ labelFilter: "test", ...getExpectedOptions() });
         expect(AppConfigurationClient.prototype.deleteConfigurationSetting).toHaveBeenCalledTimes(1);
-        expect(AppConfigurationClient.prototype.deleteConfigurationSetting).toHaveBeenCalledWith(setting);
+        expect(AppConfigurationClient.prototype.deleteConfigurationSetting).toHaveBeenCalledWith(setting, getExpectedOptions());
         expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenCalledTimes(1);
-        expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenCalledWith({ key: "Key1", value: "Value1", label: "test" });
+        expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenCalledWith({ key: "Key1", value: "Value1", label: "test" }, getExpectedOptions());
         expect(core.setFailed).toBeCalledWith("Configuration sync failed.");
         expect(core.error).toHaveBeenCalledTimes(2);
         expect(core.error).toHaveBeenNthCalledWith(1, "Failed to delete key 'DeletedKey' with label 'test'. Status code: 409 Conflict");
@@ -317,15 +317,52 @@ describe('syncConfig', () => {
 
         expect(AppConfigurationClient).toBeCalled();
         expect(AppConfigurationClient.prototype.listConfigurationSettings).toHaveBeenCalledTimes(1);
-        expect(AppConfigurationClient.prototype.listConfigurationSettings).toHaveBeenCalledWith({ labelFilter: "\0" });
+        expect(AppConfigurationClient.prototype.listConfigurationSettings).toHaveBeenCalledWith({ labelFilter: "\0", ...getExpectedOptions() });
         expect(AppConfigurationClient.prototype.deleteConfigurationSetting).toHaveBeenCalledTimes(1);
-        expect(AppConfigurationClient.prototype.deleteConfigurationSetting).toHaveBeenCalledWith(setting);
+        expect(AppConfigurationClient.prototype.deleteConfigurationSetting).toHaveBeenCalledWith(setting, getExpectedOptions());
         expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenCalledTimes(1);
-        expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenCalledWith({ key: "Key1", value: "Value1" });
+        expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenCalledWith({ key: "Key1", value: "Value1" }, getExpectedOptions());
         expect(core.setFailed).toBeCalledWith("Configuration sync partially succeeded.");
         expect(core.error).toHaveBeenCalledTimes(1);
         expect(core.error).toHaveBeenNthCalledWith(1, "Failed to add key 'Key1' with label ''. Status code: 409 Conflict");
     })
+
+    it('adds settings with different value types ', async () => {
+        let config = {
+            "String": "Value",
+            "Number": 7,
+            "Boolean": true,
+            "Array": [1, 2, 3],
+            "Object": { "Foo": "Bar" },
+            "Null": null,
+            "Undefined": undefined,
+        };
+        await configstore.syncConfig(config, "connection string", false);
+
+        expect(AppConfigurationClient).toBeCalled();
+        expect(AppConfigurationClient.prototype.listConfigurationSettings).not.toBeCalled();
+        expect(AppConfigurationClient.prototype.deleteConfigurationSetting).not.toBeCalled();
+        expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenCalledTimes(7);
+        expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenNthCalledWith(1, { key: "String", value: "Value" }, getExpectedOptions());
+        expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenNthCalledWith(2, { key: "Number", value: "7" }, getExpectedOptions());
+        expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenNthCalledWith(3, { key: "Boolean", value: "true" }, getExpectedOptions());
+        expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenNthCalledWith(4, { key: "Array", value: "[1,2,3]" }, getExpectedOptions());
+        expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenNthCalledWith(5, { key: "Object", value: "{\"Foo\":\"Bar\"}" }, getExpectedOptions());
+        expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenNthCalledWith(6, { key: "Null", value: "" }, getExpectedOptions());
+        expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenNthCalledWith(7, { key: "Undefined", value: "" }, getExpectedOptions());
+        expect(core.setFailed).not.toBeCalled();
+        expect(core.error).not.toBeCalled();
+    })
+
+    function getExpectedOptions(): OperationOptions {
+        return {
+            requestOptions: {
+                customHeaders: {
+                    "x-ms-client-request-id": expect.any(String)
+                }
+            }
+        };
+    }
 
     function setListConfigurationSettingsMock(...configurationSettings: ConfigurationSetting[]) {
         AppConfigurationClient.prototype.listConfigurationSettings = jest.fn((options?: ListConfigurationSettingsOptions) => {
