@@ -4,6 +4,8 @@ import { AppConfigurationClient, ConfigurationSettingId, SetConfigurationSetting
 import { getErrorMessage } from './errors';
 import { Tags } from './input';
 
+const userAgentPrefix = "GitHub-AppConfiguration-Sync/1.0.0";
+
 /**
  * Sync from a config object to a config store
  * 
@@ -15,7 +17,12 @@ import { Tags } from './input';
  * @param tags Tags applied to the modified settings.
  */
 export async function syncConfig(config: any, connectionString: string, strict: boolean, label?: string, prefix?: string, tags?: Tags): Promise<void> {
-    const client = new AppConfigurationClient(connectionString);
+    const appConfigurationOptions = {
+        userAgentOptions: {
+            userAgentPrefix: userAgentPrefix
+        }
+    };
+    const client = new AppConfigurationClient(connectionString, appConfigurationOptions);
 
     core.info('Determining which keys to sync');
     const settingsToAdd = getSettingsToAdd(config, label, prefix, tags);
@@ -50,13 +57,23 @@ function getSettingsToAdd(config: any, label?: string, prefix?: string, tags?: T
     for (const key in config) {      
         settings.push({
             key: prefix ? prefix + key : key,
-            value: config[key],
+            value: getSettingValue(config[key]),
             label: label ? label : undefined,
             tags: tags ? tags : undefined,
         });
     }
 
     return settings;
+}
+
+function getSettingValue(value: any): string | undefined {
+    if (value === null || value === undefined) {
+        return undefined;
+    } else if (typeof value === "object") {
+        return JSON.stringify(value);
+    } else {
+        return String(value);
+    }
 }
 
 async function getSettingsToDelete(client: AppConfigurationClient, settingsToAdd: SetConfigurationSettingParam[], label?: string, prefix?: string): Promise<ConfigurationSettingId[]> {

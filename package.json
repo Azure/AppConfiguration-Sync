@@ -9,8 +9,8 @@
   },
   "dependencies": {
     "@actions/core": "^1.2.0",
-    "@azure/app-configuration": "^1.0.0-preview.10",
-    "@types/flat": "0.0.28",
+    "@azure/app-configuration": "^1.0.0",
+    "@types/flat": "^0.0.28",
     "@types/glob": "^7.1.1",
     "@types/js-yaml": "^3.12.1",
     "@types/lodash": "^4.14.148",

@@ -327,6 +327,37 @@ describe('syncConfig', () => {
         expect(core.error).toHaveBeenNthCalledWith(1, "Failed to add key 'Key1' with label ''. Status code: 409 Conflict");
     })
 
+    it('adds settings with different value types ', async () => {
+        let config = {
+            "String": "Value",
+            "Number1": 0,
+            "Number2": 7,
+            "Boolean1": true,
+            "Boolean2": false,
+            "Array": [1, 2, 3],
+            "Object": { "Foo": "Bar" },
+            "Null": null,
+            "Undefined": undefined,
+        };
+        await configstore.syncConfig(config, "connection string", false);
+
+        expect(AppConfigurationClient).toBeCalled();
+        expect(AppConfigurationClient.prototype.listConfigurationSettings).not.toBeCalled();
+        expect(AppConfigurationClient.prototype.deleteConfigurationSetting).not.toBeCalled();
+        expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenCalledTimes(9);
+        expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenNthCalledWith(1, { key: "String", value: "Value" });
+        expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenNthCalledWith(2, { key: "Number1", value: "0" });
+        expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenNthCalledWith(3, { key: "Number2", value: "7" });
+        expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenNthCalledWith(4, { key: "Boolean1", value: "true" });
+        expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenNthCalledWith(5, { key: "Boolean2", value: "false" });
+        expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenNthCalledWith(6, { key: "Array", value: "[1,2,3]" });
+        expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenNthCalledWith(7, { key: "Object", value: "{\"Foo\":\"Bar\"}" });
+        expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenNthCalledWith(8, { key: "Null", value: undefined });
+        expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenNthCalledWith(9, { key: "Undefined", value: undefined });
+        expect(core.setFailed).not.toBeCalled();
+        expect(core.error).not.toBeCalled();
+    })
+
     function setListConfigurationSettingsMock(...configurationSettings: ConfigurationSetting[]) {
         AppConfigurationClient.prototype.listConfigurationSettings = jest.fn((options?: ListConfigurationSettingsOptions) => {
             const iter = getConfigurationSettingIterator(configurationSettings);
