@@ -36,7 +36,6 @@ jobs:
           # Replace <ConnectionString> with the name of the secret in your repository
           connectionString: ${{ secrets.<ConnectionString> }}
           separator: ':'
-          strict: false
 ```
 
 ## Building

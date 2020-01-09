@@ -233,11 +233,12 @@ describe('input', () => {
         expect(input.strict).toBe(false);
     })
 
-    it('validation fails if strict is missing', () => {
+    it('validation succeeds with missing strict', () => {
         mockInput = getDefaultInput();
         mockInput.strict = undefined;
 
-        expect(() => getInput()).toThrowError(ArgumentError);
+        const input = getInput();
+        expect(input.strict).toBe(false);
     })
 
     it('validation fails if strict is invalid', () => {

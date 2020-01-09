@@ -123,7 +123,11 @@ function getSeparator(): string {
 }
 
 function getStrict(): boolean {
-    const strict = getRequiredInputString('strict');
+    const strict = getNonRequiredInputString('strict');
+    if (!strict) {
+        return false;
+    }
+    
     if (strict === "true") {
         return true;
     } else if (strict === "false") {
