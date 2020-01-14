@@ -352,8 +352,8 @@ describe('syncConfig', () => {
         expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenNthCalledWith(5, { key: "Boolean2", value: "false" });
         expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenNthCalledWith(6, { key: "Array", value: "[1,2,3]" });
         expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenNthCalledWith(7, { key: "Object", value: "{\"Foo\":\"Bar\"}" });
-        expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenNthCalledWith(8, { key: "Null", value: undefined });
-        expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenNthCalledWith(9, { key: "Undefined", value: undefined });
+        expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenNthCalledWith(8, { key: "Null", value: "" });
+        expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenNthCalledWith(9, { key: "Undefined", value: "" });
         expect(core.setFailed).not.toBeCalled();
         expect(core.error).not.toBeCalled();
     })

@@ -68,7 +68,7 @@ function getSettingsToAdd(config: any, label?: string, prefix?: string, tags?: T
 
 function getSettingValue(value: any): string | undefined {
     if (value === null || value === undefined) {
-        return undefined;
+        return "";
     } else if (typeof value === "object") {
         return JSON.stringify(value);
     } else {
