@@ -358,6 +358,19 @@ describe('syncConfig', () => {
         expect(core.error).not.toBeCalled();
     })
 
+    it('adds setting with content type', async () => {
+        const config = { "Key1": "Value1" };
+        await configstore.syncConfig(config, "connection string", false, undefined, undefined, undefined, "contentType");
+
+        expect(AppConfigurationClient).toBeCalled();
+        expect(AppConfigurationClient.prototype.listConfigurationSettings).not.toBeCalled();
+        expect(AppConfigurationClient.prototype.deleteConfigurationSetting).not.toBeCalled();
+        expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenCalledTimes(1);
+        expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenCalledWith({ key: "Key1", value: "Value1", contentType: "contentType" });
+        expect(core.setFailed).not.toBeCalled();
+        expect(core.error).not.toBeCalled();
+    })
+
     function setListConfigurationSettingsMock(...configurationSettings: ConfigurationSetting[]) {
         AppConfigurationClient.prototype.listConfigurationSettings = jest.fn((options?: ListConfigurationSettingsOptions) => {
             const iter = getConfigurationSettingIterator(configurationSettings);

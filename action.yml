@@ -28,6 +28,9 @@ inputs:
   tags:
     description: 'Stringified form of a JSON object with the following shape: { [propertyName: string]: string; }'
     required: false
+  contentType:
+    description: 'Content type associated with the values'
+    required: false    
 runs:
   using: 'node12'
   main: 'lib/index.js'
