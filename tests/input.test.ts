@@ -362,6 +362,22 @@ describe('input', () => {
         expect(input.tags).toEqual({ A: "foo", B: "foo" });
     })
 
+    it('validation succeeds with missing content type', () => {
+        mockInput = getDefaultInput();
+        mockInput.contentType = undefined;
+
+        const input = getInput();
+        expect(input.contentType).toBe(undefined);
+    })
+
+    it('validation succeeds with content type', () => {
+        mockInput = getDefaultInput();
+        mockInput.contentType = "contentType";
+
+        const input = getInput();
+        expect(input.contentType).toBe("contentType");
+    })
+
     function verifySeparator(separator: string) {
         mockInput = getDefaultInput();
         mockInput.separator = separator

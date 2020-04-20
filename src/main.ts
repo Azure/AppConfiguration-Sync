@@ -10,7 +10,7 @@ async function main(): Promise<void> {
         const input = getInput();
         const config = await loadConfigFiles(input.workspace, input.configFile, input.format, input.separator, input.depth);
 
-        await syncConfig(config, input.connectionString, input.strict, input.label, input.prefix, input.tags);
+        await syncConfig(config, input.connectionString, input.strict, input.label, input.prefix, input.tags, input.contentType);
     } catch (error) {
         core.setFailed(getErrorMessage(error));
     }

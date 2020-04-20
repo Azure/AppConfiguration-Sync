@@ -15,8 +15,9 @@ const userAgentPrefix = "GitHub-AppConfiguration-Sync/1.0.0";
  * @param label Label assigned to the modified settings.
  * @param prefix Prefix appended to the front of the setting key.
  * @param tags Tags applied to the modified settings.
+ * @param contentType Content type applied to the settings.
  */
-export async function syncConfig(config: any, connectionString: string, strict: boolean, label?: string, prefix?: string, tags?: Tags): Promise<void> {
+export async function syncConfig(config: any, connectionString: string, strict: boolean, label?: string, prefix?: string, tags?: Tags, contentType?: string): Promise<void> {
     const appConfigurationOptions = {
         userAgentOptions: {
             userAgentPrefix: userAgentPrefix
@@ -25,7 +26,7 @@ export async function syncConfig(config: any, connectionString: string, strict: 
     const client = new AppConfigurationClient(connectionString, appConfigurationOptions);
 
     core.info('Determining which keys to sync');
-    const settingsToAdd = getSettingsToAdd(config, label, prefix, tags);
+    const settingsToAdd = getSettingsToAdd(config, label, prefix, tags, contentType);
     const settingsToDelete = strict ? await getSettingsToDelete(client, settingsToAdd, label, prefix) : [];
 
     const failedDeletes = await deleteSettings(client, settingsToDelete);
@@ -51,7 +52,7 @@ export async function syncConfig(config: any, connectionString: string, strict: 
     }   
 }
 
-function getSettingsToAdd(config: any, label?: string, prefix?: string, tags?: Tags): SetConfigurationSettingParam[] {
+function getSettingsToAdd(config: any, label?: string, prefix?: string, tags?: Tags, contentType?: string): SetConfigurationSettingParam[] {
     const settings: SetConfigurationSettingParam[] = [];
 
     for (const key in config) {      
@@ -60,6 +61,7 @@ function getSettingsToAdd(config: any, label?: string, prefix?: string, tags?: T
             value: getSettingValue(config[key]),
             label: label ? label : undefined,
             tags: tags ? tags : undefined,
+            contentType: contentType ? contentType : undefined
         });
     }
 

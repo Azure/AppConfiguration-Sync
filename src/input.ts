@@ -17,6 +17,7 @@ export interface Input {
     label?: string;
     depth?: number;
     tags?: Tags;
+    contentType?: string;
 }
 
 /**
@@ -40,7 +41,8 @@ export function getInput(): Input {
         prefix:             getNonRequiredInputString('prefix'),
         label:              getNonRequiredInputString('label'),
         depth:              getDepth(),
-        tags:               getTags()
+        tags:               getTags(),
+        contentType:        getNonRequiredInputString('contentType')
     }
 }
 
