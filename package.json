@@ -20,7 +20,7 @@
     "flat": "^5.0.0",
     "glob": "^7.1.6",
     "js-yaml": "^3.13.1",
-    "lodash": "^4.17.19",
+    "lodash": "^4.17.21",
     "statuses": "^1.5.0"
   },
   "devDependencies": {
