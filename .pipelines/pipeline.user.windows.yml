@@ -1,0 +1,28 @@
+environment:
+  host:
+    os: windows
+  runtime:
+    provider: appcontainer
+    image: cdpxwin1809.azurecr.io/global/vse2019:16.8.2
+
+version:
+  major: 1
+  minor: 0
+  system: buildrevision
+  name: 'AppConfiguration-Sync'
+ 
+restore:
+  commands:
+    - !!defaultcommand
+      name: 'Restore'
+      command: 'restore.cmd'
+
+build:
+  commands:
+    - !!buildcommand
+      name: 'Build'
+      command: 'build.cmd'
+      artifacts:
+        - from: 'lib'
+          include:
+            - '**/*'
