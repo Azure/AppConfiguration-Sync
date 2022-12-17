@@ -8,7 +8,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@actions/core": "^1.2.6",
+    "@actions/core": "^1.9.1",
     "@azure/app-configuration": "^1.0.0",
     "@types/flat": "^0.0.28",
     "@types/glob": "^7.1.1",
