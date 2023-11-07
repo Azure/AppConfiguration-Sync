@@ -2,7 +2,7 @@ import * as core from '@actions/core';
 
 import { ArgumentError } from '../src/errors';
 import { ConfigFormat } from '../src/configfile';
-import { getInput } from '../src/input'
+import { getInput, ConnectionString } from '../src/input'
 
 let mockInput: any;
 
@@ -118,7 +118,9 @@ describe('input', () => {
         mockInput.connectionString = "Endpoint=https://example.azconfig.io;Id=Id;Secret=Secret";
 
         const input = getInput();
-        expect(input.connectionString).toBe("Endpoint=https://example.azconfig.io;Id=Id;Secret=Secret");
+        expect(input.connectionInfo.type).toBe('connection-string');
+        const { connectionString } = input.connectionInfo as ConnectionString;
+        expect(connectionString).toBe("Endpoint=https://example.azconfig.io;Id=Id;Secret=Secret");
     })
 
     it('validation succeeds with connectionString with different segment order', () => {
@@ -126,7 +128,9 @@ describe('input', () => {
         mockInput.connectionString = "Secret=Secret;Id=Id;Endpoint=https://example.azconfig.io";
 
         const input = getInput();
-        expect(input.connectionString).toBe("Secret=Secret;Id=Id;Endpoint=https://example.azconfig.io");
+        expect(input.connectionInfo.type).toBe('connection-string');
+        const { connectionString } = input.connectionInfo as ConnectionString;
+        expect(connectionString).toBe("Secret=Secret;Id=Id;Endpoint=https://example.azconfig.io");
     })
 
     it('validation fails if connectionString is missing', () => {

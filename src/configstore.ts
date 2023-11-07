@@ -2,7 +2,7 @@ import * as core from '@actions/core';
 import { AppConfigurationClient, ConfigurationSettingId, SetConfigurationSettingParam } from '@azure/app-configuration';
 
 import { getErrorMessage } from './errors';
-import { Tags } from './input';
+import { Tags, ConnectionString } from './input';
 
 const userAgentPrefix = "GitHub-AppConfiguration-Sync/1.0.0";
 
@@ -17,14 +17,7 @@ const userAgentPrefix = "GitHub-AppConfiguration-Sync/1.0.0";
  * @param tags Tags applied to the modified settings.
  * @param contentType Content type applied to the settings.
  */
-export async function syncConfig(config: any, connectionString: string, strict: boolean, label?: string, prefix?: string, tags?: Tags, contentType?: string): Promise<void> {
-    const appConfigurationOptions = {
-        userAgentOptions: {
-            userAgentPrefix: userAgentPrefix
-        }
-    };
-    const client = new AppConfigurationClient(connectionString, appConfigurationOptions);
-
+export async function syncConfig(config: any, client: AppConfigurationClient, strict: boolean, label?: string, prefix?: string, tags?: Tags, contentType?: string): Promise<void> {
     core.info('Determining which keys to sync');
     const settingsToAdd = getSettingsToAdd(config, label, prefix, tags, contentType);
     const settingsToDelete = strict ? await getSettingsToDelete(client, settingsToAdd, label, prefix) : [];
@@ -128,4 +121,13 @@ async function deleteSettings(client: AppConfigurationClient, settings: Configur
 
 function getLabel(setting: ConfigurationSettingId): string {
     return setting.label || "";
+}
+
+const appConfigurationOptions = {
+  userAgentOptions: {
+    userAgentPrefix: userAgentPrefix
+  }
+};
+export function clientFromConnectionString(info: ConnectionString) : AppConfigurationClient {
+  return new AppConfigurationClient(info.connectionString, appConfigurationOptions);
 }
