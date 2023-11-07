@@ -2,9 +2,13 @@ import * as core from '@actions/core';
 
 import { ArgumentError } from '../src/errors';
 import { ConfigFormat } from '../src/configfile';
-import { getInput, ConnectionString } from '../src/input'
+import { getInput, ConnectionString, Identity } from '../src/input'
 
 let mockInput: any;
+
+const mock_client_id = "d78ef3b2-ddf8-42a3-8e6c-257f18193cda";
+const mock_tenant_id = "e4790db6-8064-4697-a960-d2cc984d9eb0";
+const mock_endpoint =  "https://dummy.azconfig.io";
 
 jest.mock('@actions/core', () => {
     return {
@@ -111,6 +115,22 @@ describe('input', () => {
         mockInput.format = "invalid";
 
         expect(() => getInput()).toThrowError(ArgumentError);
+    })
+
+    describe('workload identity', () => {
+
+      it('validation succeeds if workload identity parameters are specified', () => {
+          mockInput = getDefaultInput();
+          Object.assign(mockInput, { endpoint: mock_endpoint, 'client-id': mock_client_id, 'tenant-id': mock_tenant_id });
+
+          const input = getInput();
+          expect(input.connectionInfo.type).toBe('identity');
+          const { endpoint, tenantId, clientId } = input.connectionInfo as Identity;
+          expect(endpoint).toBe(mock_endpoint);
+          expect(tenantId).toBe(mock_tenant_id);
+          expect(clientId).toBe(mock_client_id);
+      })
+
     })
 
     it('validation succeeds with connectionString', () => {

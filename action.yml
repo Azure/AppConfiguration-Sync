@@ -9,7 +9,7 @@ inputs:
     required: true
   connectionString:
     description: 'Connection string for the App Configuration instance'
-    required: true
+    required: false
   separator:
     description: 'Separator used when flattening the configuration file to key-value pairs'
     required: true
@@ -30,7 +30,20 @@ inputs:
     required: false
   contentType:
     description: 'Content type associated with the values'
-    required: false    
+    required: false
+  endpoint:
+    description: 'Endpoint for the App Configuration instance'
+    required: false
+  audience:
+    description: 'Provide audience field for access-token. Default value is api://AzureADTokenExchange' 
+    required: false
+    default: 'api://AzureADTokenExchange'
+  tenant-id:
+    description: 'Azure AD Tenant ID'
+    required: false
+  client-id:
+    description: 'App Registration Client ID'
+    required: false
 runs:
   using: 'node20'
   main: 'lib/index.js'
