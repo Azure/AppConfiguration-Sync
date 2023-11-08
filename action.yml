@@ -7,9 +7,6 @@ inputs:
   format:
     description: 'Format of the configuration file. Valid values are: json, yaml, properties'
     required: true
-  connectionString:
-    description: 'Connection string for the App Configuration instance'
-    required: false
   separator:
     description: 'Separator used when flattening the configuration file to key-value pairs'
     required: true
@@ -31,18 +28,32 @@ inputs:
   contentType:
     description: 'Content type associated with the values'
     required: false
+  auth-type:
+    description: 'The type of authentication. Supported values are CONNECTION_STRING, SERVICE_PRINCIPAL, FEDERATED_IDENTITY. Default value is CONNECTION_STRING'
+    required: false
+    default: 'CONNECTION_STRING'
+  # Arguments for CONNECTION_STRING
+  connectionString:
+    description: 'Connection string for the App Configuration instance'
+    required: false
+  # Arguments for FEDERATED_IDENTITY and SERVICE_PRINCIPAL
   endpoint:
     description: 'Endpoint for the App Configuration instance'
     required: false
-  audience:
-    description: 'Provide audience field for access-token. Default value is api://AzureADTokenExchange' 
-    required: false
-    default: 'api://AzureADTokenExchange'
   tenant-id:
     description: 'Azure AD Tenant ID'
     required: false
   client-id:
-    description: 'App Registration Client ID'
+    description: 'App Registration or Service Principal Client ID'
+    required: false
+  # Arguments specifically for FEDERATED_IDENTITY
+  audience:
+    description: 'Provide audience field for access-token. Default value is api://AzureADTokenExchange' 
+    required: false
+    default: 'api://AzureADTokenExchange'
+  # Arguments specifically for SERVICE_PRINCIPAL
+  client-secret:
+    description: 'Service Principal Client Secret'
     required: false
 runs:
   using: 'node20'

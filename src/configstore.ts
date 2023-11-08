@@ -1,9 +1,9 @@
 import * as core from '@actions/core';
-import { ClientAssertionCredential } from '@azure/identity';
+import { ClientAssertionCredential, ClientSecretCredential } from '@azure/identity';
 import { AppConfigurationClient, ConfigurationSettingId, SetConfigurationSettingParam } from '@azure/app-configuration';
 
 import { getErrorMessage } from './errors';
-import { Tags, Identity, ConnectionString } from './input';
+import { Tags, Identity, ConnectionString, ServicePrincipal } from './input';
 
 const userAgentPrefix = "GitHub-AppConfiguration-Sync/1.0.0";
 
@@ -136,5 +136,11 @@ export function clientFromConnectionString(info: ConnectionString) : AppConfigur
 export async function clientFromIdentityFederation(info: Identity) : Promise<AppConfigurationClient> {
   const { endpoint, clientId, tenantId, audience } = info;
   const credential = new ClientAssertionCredential(tenantId, clientId, () => core.getIDToken(audience));
+  return new AppConfigurationClient(endpoint, credential, appConfigurationOptions);
+}
+
+export function clientFromServicePrincipal(info: ServicePrincipal) : AppConfigurationClient {
+  const { endpoint, clientId, clientSecret, tenantId } = info;
+  const credential = new ClientSecretCredential(tenantId, clientId, clientSecret);
   return new AppConfigurationClient(endpoint, credential, appConfigurationOptions);
 }

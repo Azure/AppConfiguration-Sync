@@ -17,7 +17,7 @@ export interface Input {
     workspace: string;
     configFile: string;
     format: ConfigFormat;
-    connectionInfo: ConnectionString | Identity;
+    connectionInfo: ConnectionString | Identity | ServicePrincipal;
     separator: string;
     strict: boolean;
     prefix?: string;
@@ -40,17 +40,31 @@ export interface Identity {
     audience: string;
 }
 
+export interface ServicePrincipal {
+    type: 'service-principal';
+    endpoint: string;
+    clientId: string;
+    clientSecret: string;
+    tenantId: string;
+}
+
 /**
  * Obtain the action inputs from the GitHub environment
  */
 export function getInput(): Input {
-    const workloadIdentityCredentials = getWorkloadIdentityConnectionInfo();
-    const connectionStringCredentials = getConnectionStringConnectionInfo();
-
-    const connectionInfo = workloadIdentityCredentials || connectionStringCredentials;
-
-    if (!connectionInfo) {
-        throw new ArgumentError(`Neither connectionString nor {endpoint, clientId, tenantId} provided`);
+    let connectionInfo;
+    switch (getRequiredInputString('auth-type')) {
+        case 'CONNECTION_STRING':
+            connectionInfo = getConnectionStringConnectionInfo();
+            break;
+        case 'FEDERATED_IDENTITY':
+            connectionInfo = getWorkloadIdentityConnectionInfo();
+            break;
+        case 'SERVICE_PRINCIPAL':
+            connectionInfo = getServicePrincipalConnectionInfo();
+            break;
+        default:
+            throw new ArgumentError(`Invalid 'auth-type', expected one of { CONNECTION_STRING, FEDERATED_IDENTITY, SERVICE_PRINCIPAL }`);
     }
 
     return {
@@ -104,10 +118,8 @@ function getFormat(): ConfigFormat {
     }
 }
 
-function getConnectionStringConnectionInfo(): ConnectionString | undefined {
-    let connectionString = getNonRequiredInputString('connectionString');
-    if (!connectionString)
-      return undefined;
+function getConnectionStringConnectionInfo(): ConnectionString {
+    let connectionString = getRequiredInputString('connectionString');
 
     const segments = connectionString.split(";");
     let valid = false;
@@ -131,7 +143,7 @@ function getConnectionStringConnectionInfo(): ConnectionString | undefined {
     }
 
     if (!valid) {
-        throw new ArgumentError(`Connection string is invalid.`);
+        throw new ArgumentError(`Connection string is invalid: need Endpoint, Id and Secret segments.`);
     }
 
     return { type: 'connection-string', connectionString };
@@ -210,13 +222,24 @@ function getTags(): Tags | undefined {
     return parsedTags;
 }
 
-function getWorkloadIdentityConnectionInfo(): Identity | undefined {
+function getWorkloadIdentityConnectionInfo(): Identity {
   const endpoint = getNonRequiredInputString("endpoint");
   const clientId = getNonRequiredInputString("client-id");
   const tenantId = getNonRequiredInputString("tenant-id");
   const audience = getRequiredInputString("audience");
   if (!endpoint || !clientId || !tenantId)
-    return undefined;
+      throw new ArgumentError(`Need all of { endpoint, client-id, tenant-id } for auth-type FEDERATED_IDENTITY`)
 
   return { type: 'identity', endpoint, clientId, tenantId, audience };
+}
+
+function getServicePrincipalConnectionInfo(): ServicePrincipal {
+  const endpoint = getNonRequiredInputString("endpoint");
+  const clientId = getNonRequiredInputString("client-id");
+  const clientSecret = getNonRequiredInputString("client-secret");
+  const tenantId = getNonRequiredInputString("tenant-id");
+  if (!endpoint || !clientId || !clientSecret || !tenantId)
+      throw new ArgumentError(`Need all of { endpoint, client-id, client-secret, tenant-id } for auth-type SERVICE_PRINCIPAL`)
+
+  return { type: 'service-principal', endpoint, clientId, clientSecret, tenantId };
 }

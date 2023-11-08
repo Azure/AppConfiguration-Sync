@@ -37,6 +37,8 @@ describe('input', () => {
         return {
             configurationFile: "defaultConfigFile",
             format: "json",
+            'auth-type': 'CONNECTION_STRING',
+            audience: 'api://AzureADTokenExchange',
             connectionString: "Endpoint=https://default.azconfig.io;Id=default;Secret=default",
             separator: ":",
             strict: "true",
@@ -121,7 +123,8 @@ describe('input', () => {
 
       it('validation succeeds if workload identity parameters are specified', () => {
           mockInput = getDefaultInput();
-          Object.assign(mockInput, { endpoint: mock_endpoint, 'client-id': mock_client_id, 'tenant-id': mock_tenant_id });
+          delete mockInput.connectionString;
+          Object.assign(mockInput, { 'auth-type': 'FEDERATED_IDENTITY', endpoint: mock_endpoint, 'client-id': mock_client_id, 'tenant-id': mock_tenant_id });
 
           const input = getInput();
           expect(input.connectionInfo.type).toBe('identity');
