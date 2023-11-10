@@ -6,9 +6,15 @@ JSON, YAML, and .properties files are supported. For the full list of action inp
 
 To start using this GitHub action, go to your repository and click the "Actions" tab. This GitHub action will be available from the marketplace under the name "Azure App Configuration Sync". See the usage section below for an example of how to set up the action yml file. For a more in-depth view of GitHub workflows and actions click [here](https://help.github.com/en/actions/automating-your-workflow-with-github-actions).
 
-## Connection string
+## Authentication options
 
-The connection string for the App Configuration instance should be stored as a [secret](https://help.github.com/en/articles/virtual-environments-for-github-actions#creating-and-using-secrets-encrypted-variables) in the GitHub repository.  The secret should be used in the workflow.
+This Action supports three ways of authenticating to App Configuration. The Action determines which method to use based on the `auth-type` setting. If this setting is absent, the connection string method is used as default.
+1. **Connection string**: The connection string embeds credentials for accessing the App Configuration instance. You can retrieve it from the Azure Portal or as output from your Infrastructure as Code tool.
+1. **Service principal**: In this case you supply an endpoint such as https://example-appconfig-instance.azconfig.io, a tenant ID, client ID and client Secret.
+1. **Federated Workload Identity**: You must have [federated your GitHub Actions environment or branch with Azure Entra ID](https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-azure) previously. You must specify the endpoint, tenant ID and client ID as with the service principal case. The secret is not needed; the Action will exchange your GitHub token for an Entra ID token scoped to the App Configuration instance.
+
+Sensitive information, such as the connection string for the App Configuration instance or the Client Secret of the service principal should be stored as a [secret](https://help.github.com/en/articles/virtual-environments-for-github-actions#creating-and-using-secrets-encrypted-variables) in the GitHub repository.  The secret can then be used in the workflow.
+
 
 ## Usage example
 
@@ -29,13 +35,48 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
-      - uses: azure/appconfiguration-sync@v1
+
+      - name: 'Push config settings using connection-string'
+        uses: azure/appconfiguration-sync@v1
         with:
           configurationFile: 'appsettings.json'
           format: 'json'
-          # Replace <ConnectionString> with the name of the secret in your repository
-          connectionString: ${{ secrets.<ConnectionString> }}
           separator: ':'
+          auth-type: CONNECTION_STRING
+          connectionString: ${{ secrets.APP_CONFIG_CONNSTRING }}
+```
+
+The following snippet shows how to push a YAML file using a service principal.
+```yaml
+    steps:
+      - name: 'Push config settings using service principal'
+        uses: azure/appconfiguration-sync@v1
+        with:
+          configurationFile: 'application.yaml'
+          format: 'yaml'
+          separator: ':'
+          auth-type: SERVICE_PRINCIPAL
+          endpoint: ${{ secrets.APP_CONFIG_ENDPOINT }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+```
+Finally, this snippet shows how to push a properties file using federated identity:
+```yaml
+    steps:
+      - name: 'Push config settings using identity'
+        uses: azure/appconfiguration-sync@v1
+        with:
+          configurationFile: 'application.properties'
+          format: 'properties'
+          separator: ':'
+          auth-type: FEDERATED_IDENTITY
+          endpoint: ${{ secrets.APP_CONFIG_ENDPOINT }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          # The audience of the token is the recommended `api://AzureADTokenExchange` value,
+          # but you can specify a different one.
+          # audience: api://AzureADTokenExchange
 ```
 
 ## Building
