@@ -2,9 +2,13 @@ import * as core from '@actions/core';
 
 import { ArgumentError } from '../src/errors';
 import { ConfigFormat } from '../src/configfile';
-import { getInput } from '../src/input'
+import { getInput, ConnectionString, Identity } from '../src/input'
 
 let mockInput: any;
+
+const mock_client_id = "d78ef3b2-ddf8-42a3-8e6c-257f18193cda";
+const mock_tenant_id = "e4790db6-8064-4697-a960-d2cc984d9eb0";
+const mock_endpoint =  "https://dummy.azconfig.io";
 
 jest.mock('@actions/core', () => {
     return {
@@ -33,6 +37,8 @@ describe('input', () => {
         return {
             configurationFile: "defaultConfigFile",
             format: "json",
+            'auth-type': 'CONNECTION_STRING',
+            audience: 'api://AzureADTokenExchange',
             connectionString: "Endpoint=https://default.azconfig.io;Id=default;Secret=default",
             separator: ":",
             strict: "true",
@@ -113,12 +119,31 @@ describe('input', () => {
         expect(() => getInput()).toThrowError(ArgumentError);
     })
 
+    describe('workload identity', () => {
+
+      it('validation succeeds if workload identity parameters are specified', () => {
+          mockInput = getDefaultInput();
+          delete mockInput.connectionString;
+          Object.assign(mockInput, { 'auth-type': 'FEDERATED_IDENTITY', endpoint: mock_endpoint, 'client-id': mock_client_id, 'tenant-id': mock_tenant_id });
+
+          const input = getInput();
+          expect(input.connectionInfo.type).toBe('identity');
+          const { endpoint, tenantId, clientId } = input.connectionInfo as Identity;
+          expect(endpoint).toBe(mock_endpoint);
+          expect(tenantId).toBe(mock_tenant_id);
+          expect(clientId).toBe(mock_client_id);
+      })
+
+    })
+
     it('validation succeeds with connectionString', () => {
         mockInput = getDefaultInput();
         mockInput.connectionString = "Endpoint=https://example.azconfig.io;Id=Id;Secret=Secret";
 
         const input = getInput();
-        expect(input.connectionString).toBe("Endpoint=https://example.azconfig.io;Id=Id;Secret=Secret");
+        expect(input.connectionInfo.type).toBe('connection-string');
+        const { connectionString } = input.connectionInfo as ConnectionString;
+        expect(connectionString).toBe("Endpoint=https://example.azconfig.io;Id=Id;Secret=Secret");
     })
 
     it('validation succeeds with connectionString with different segment order', () => {
@@ -126,7 +151,9 @@ describe('input', () => {
         mockInput.connectionString = "Secret=Secret;Id=Id;Endpoint=https://example.azconfig.io";
 
         const input = getInput();
-        expect(input.connectionString).toBe("Secret=Secret;Id=Id;Endpoint=https://example.azconfig.io");
+        expect(input.connectionInfo.type).toBe('connection-string');
+        const { connectionString } = input.connectionInfo as ConnectionString;
+        expect(connectionString).toBe("Secret=Secret;Id=Id;Endpoint=https://example.azconfig.io");
     })
 
     it('validation fails if connectionString is missing', () => {

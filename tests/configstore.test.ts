@@ -4,9 +4,12 @@ import { PageSettings } from '@azure/core-paging';
 import { RestError } from '@azure/core-http';
 
 import * as configstore from '../src/configstore';
+import { ConnectionString } from '../src/input';
 
 jest.mock('@actions/core');
 jest.mock('@azure/app-configuration');
+
+const connString : ConnectionString = { type: 'connection-string', connectionString: 'a connection string' };
 
 describe('syncConfig', () => {
    
@@ -18,7 +21,7 @@ describe('syncConfig', () => {
 
     it('adds setting', async () => {
         const config = { "Key1": "Value1" };
-        await configstore.syncConfig(config, "connection string", false);
+        await configstore.syncConfig(config, configstore.clientFromConnectionString(connString), false);
 
         expect(AppConfigurationClient).toBeCalled();
         expect(AppConfigurationClient.prototype.listConfigurationSettings).not.toBeCalled();
@@ -35,7 +38,7 @@ describe('syncConfig', () => {
             "Key2": "Value2",
         };
 
-        await configstore.syncConfig(config, "connection string", false);
+        await configstore.syncConfig(config, configstore.clientFromConnectionString(connString), false);
 
         expect(AppConfigurationClient).toBeCalled();
         expect(AppConfigurationClient.prototype.listConfigurationSettings).not.toBeCalled();
@@ -51,7 +54,7 @@ describe('syncConfig', () => {
         setListConfigurationSettingsMock({ key: "Key2", value: "Value2", isReadOnly: false });
 
         const config = { "Key1": "Value1" };
-        await configstore.syncConfig(config, "connection string", false);
+        await configstore.syncConfig(config, configstore.clientFromConnectionString(connString), false);
 
         expect(AppConfigurationClient).toBeCalled();
         expect(AppConfigurationClient.prototype.listConfigurationSettings).not.toBeCalled();
@@ -68,7 +71,7 @@ describe('syncConfig', () => {
         setListConfigurationSettingsMock(setting1, setting2);
 
         const config = { "Key1": "New Value" };
-        await configstore.syncConfig(config, "connection string", false);
+        await configstore.syncConfig(config, configstore.clientFromConnectionString(connString), false);
 
         expect(AppConfigurationClient).toBeCalled();
         expect(AppConfigurationClient.prototype.listConfigurationSettings).not.toBeCalled();
@@ -84,7 +87,7 @@ describe('syncConfig', () => {
         setListConfigurationSettingsMock(setting);
 
         const config = { "Key1": "Value1" };
-        await configstore.syncConfig(config, "connection string", true);
+        await configstore.syncConfig(config, configstore.clientFromConnectionString(connString), true);
 
         expect(AppConfigurationClient).toBeCalled();
         expect(AppConfigurationClient.prototype.listConfigurationSettings).toHaveBeenCalledTimes(1);
@@ -103,7 +106,7 @@ describe('syncConfig', () => {
         setListConfigurationSettingsMock(setting1, setting2);
 
         const config = { "Key1": "New Value" };
-        await configstore.syncConfig(config, "connection string", true);
+        await configstore.syncConfig(config, configstore.clientFromConnectionString(connString), true);
 
         expect(AppConfigurationClient).toBeCalled();
         expect(AppConfigurationClient.prototype.listConfigurationSettings).toHaveBeenCalledTimes(1);
@@ -123,7 +126,7 @@ describe('syncConfig', () => {
         setListConfigurationSettingsMock(setting1, setting2, setting3);
 
         let config = { "Key1": "New Value" };
-        await configstore.syncConfig(config, "connection string", false, "Label2");
+        await configstore.syncConfig(config, configstore.clientFromConnectionString(connString), false, "Label2");
 
         expect(AppConfigurationClient).toBeCalled();
         expect(AppConfigurationClient.prototype.listConfigurationSettings).not.toBeCalled();
@@ -142,7 +145,7 @@ describe('syncConfig', () => {
         setListConfigurationSettingsMock(setting1, setting2, setting3, setting4);
 
         let config = { "Key1": "New Value" };
-        await configstore.syncConfig(config, "connection string", true, "Label2");
+        await configstore.syncConfig(config, configstore.clientFromConnectionString(connString), true, "Label2");
 
         expect(AppConfigurationClient).toBeCalled();
         expect(AppConfigurationClient.prototype.listConfigurationSettings).toHaveBeenCalledTimes(1);
@@ -161,7 +164,7 @@ describe('syncConfig', () => {
         setListConfigurationSettingsMock(setting1, setting2);
 
         let config = { "Key1": "New Value" };
-        await configstore.syncConfig(config, "connection string", false, undefined, "prefix::");
+        await configstore.syncConfig(config, configstore.clientFromConnectionString(connString), false, undefined, "prefix::");
 
         expect(AppConfigurationClient).toBeCalled();
         expect(AppConfigurationClient.prototype.listConfigurationSettings).not.toBeCalled();
@@ -177,7 +180,7 @@ describe('syncConfig', () => {
         setListConfigurationSettingsMock(setting);
 
         let config = { "Key1": "New Value" };
-        await configstore.syncConfig(config, "connection string", true, undefined, "prefix::");
+        await configstore.syncConfig(config, configstore.clientFromConnectionString(connString), true, undefined, "prefix::");
 
         expect(AppConfigurationClient).toBeCalled();
         expect(AppConfigurationClient.prototype.listConfigurationSettings).toHaveBeenCalledTimes(1);
@@ -198,7 +201,7 @@ describe('syncConfig', () => {
         setListConfigurationSettingsMock(setting1, setting2, setting3, setting4);
 
         let config = { "Key1": "New Value" };
-        await configstore.syncConfig(config, "connection string", false, "Label", "prefix::");
+        await configstore.syncConfig(config, configstore.clientFromConnectionString(connString), false, "Label", "prefix::");
 
         expect(AppConfigurationClient).toBeCalled();
         expect(AppConfigurationClient.prototype.listConfigurationSettings).not.toBeCalled();
@@ -215,7 +218,7 @@ describe('syncConfig', () => {
         setListConfigurationSettingsMock(setting1, setting2);
 
         let config = { "Key1": "New Value" };
-        await configstore.syncConfig(config, "connection string", true, "Label", "prefix::");
+        await configstore.syncConfig(config, configstore.clientFromConnectionString(connString), true, "Label", "prefix::");
 
         expect(AppConfigurationClient).toBeCalled();
         expect(AppConfigurationClient.prototype.listConfigurationSettings).toHaveBeenCalledTimes(1);
@@ -230,7 +233,7 @@ describe('syncConfig', () => {
 
     it('adds setting with tags', async () => {
         let config = { "Key1": "New Value" };
-        await configstore.syncConfig(config, "connection string", false, undefined, undefined, { foo: "bar" });
+        await configstore.syncConfig(config, configstore.clientFromConnectionString(connString), false, undefined, undefined, { foo: "bar" });
 
         expect(AppConfigurationClient).toBeCalled();
         expect(AppConfigurationClient.prototype.listConfigurationSettings).not.toBeCalled();
@@ -245,7 +248,7 @@ describe('syncConfig', () => {
         setListConfigurationSettingsMock({ key: "Key1", value: "Value1", isReadOnly: false });
 
         let config = { "Key1": "New Value" };
-        await configstore.syncConfig(config, "connection string", false, undefined, undefined, { foo: "bar" });
+        await configstore.syncConfig(config, configstore.clientFromConnectionString(connString), false, undefined, undefined, { foo: "bar" });
 
         expect(AppConfigurationClient).toBeCalled();
         expect(AppConfigurationClient.prototype.listConfigurationSettings).not.toBeCalled();
@@ -262,7 +265,7 @@ describe('syncConfig', () => {
         });
         
         const config = { "Key1": "Value1", "Key2": "Value2" };
-        await configstore.syncConfig(config, "connection string", false);
+        await configstore.syncConfig(config, configstore.clientFromConnectionString(connString), false);
 
         expect(AppConfigurationClient).toBeCalled();
         expect(AppConfigurationClient.prototype.listConfigurationSettings).not.toBeCalled();
@@ -289,7 +292,7 @@ describe('syncConfig', () => {
         setListConfigurationSettingsMock(setting);
 
         const config = { "Key1": "Value1" };
-        await configstore.syncConfig(config, "connection string", true, "test");
+        await configstore.syncConfig(config, configstore.clientFromConnectionString(connString), true, "test");
 
         expect(AppConfigurationClient).toBeCalled();
         expect(AppConfigurationClient.prototype.listConfigurationSettings).toHaveBeenCalledTimes(1);
@@ -313,7 +316,7 @@ describe('syncConfig', () => {
         setListConfigurationSettingsMock(setting);
 
         const config = { "Key1": "Value1" };
-        await configstore.syncConfig(config, "connection string", true);
+        await configstore.syncConfig(config, configstore.clientFromConnectionString(connString), true);
 
         expect(AppConfigurationClient).toBeCalled();
         expect(AppConfigurationClient.prototype.listConfigurationSettings).toHaveBeenCalledTimes(1);
@@ -339,7 +342,7 @@ describe('syncConfig', () => {
             "Null": null,
             "Undefined": undefined,
         };
-        await configstore.syncConfig(config, "connection string", false);
+        await configstore.syncConfig(config, configstore.clientFromConnectionString(connString), false);
 
         expect(AppConfigurationClient).toBeCalled();
         expect(AppConfigurationClient.prototype.listConfigurationSettings).not.toBeCalled();
@@ -360,7 +363,7 @@ describe('syncConfig', () => {
 
     it('adds setting with content type', async () => {
         const config = { "Key1": "Value1" };
-        await configstore.syncConfig(config, "connection string", false, undefined, undefined, undefined, "contentType");
+        await configstore.syncConfig(config, configstore.clientFromConnectionString(connString), false, undefined, undefined, undefined, "contentType");
 
         expect(AppConfigurationClient).toBeCalled();
         expect(AppConfigurationClient.prototype.listConfigurationSettings).not.toBeCalled();

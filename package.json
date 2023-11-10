@@ -2,7 +2,7 @@
   "name": "syncConfig",
   "private": true,
   "scripts": {
-    "build": "ncc build src\\main.ts -m -o lib",
+    "build": "ncc build src/main.ts -m -o lib",
     "lint": "eslint src/**/*.ts",
     "lint:fix": "eslint src/**/*.ts --fix",
     "test": "jest"
@@ -10,6 +10,7 @@
   "dependencies": {
     "@actions/core": "^1.9.1",
     "@azure/app-configuration": "^1.0.0",
+    "@azure/identity": "^3.3.2",
     "@types/flat": "^0.0.28",
     "@types/glob": "^7.1.1",
     "@types/js-yaml": "^3.12.1",
@@ -27,7 +28,7 @@
     "@types/jest": "^24.0.23",
     "@typescript-eslint/eslint-plugin": "^2.9.0",
     "@typescript-eslint/parser": "^2.9.0",
-    "@zeit/ncc": "^0.20.5",
+    "@vercel/ncc": "^0.38.1",
     "eslint": "^6.7.1",
     "jest": "^24.9.0",
     "ts-jest": "^24.1.0",
