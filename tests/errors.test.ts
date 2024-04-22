@@ -92,7 +92,7 @@ describe('errors', () => {
         const error = new RestError("<message>", undefined, 401);
         const message = getErrorMessage(error);
 
-        expect(message).toBe("Status code: 401 Unauthorized");
+        expect(message).toBe("Status code: 401");
     })
 
     it('getErrorMessage with RestError and unknown number status', () => {
@@ -106,6 +106,6 @@ describe('errors', () => {
         const error = new RestError("<message>", undefined, 401);
         const message = getErrorMessage(error, "<description>");
 
-        expect(message).toBe("<description> Status code: 401 Unauthorized");
+        expect(message).toBe("<description> Status code: 401");
     })
 })
