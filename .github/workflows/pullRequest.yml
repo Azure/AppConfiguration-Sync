@@ -20,6 +20,10 @@ jobs:
     - name: Install dependencies
       run: npm install
 
+    - name: Display the path
+      shell: bash
+      run: echo $PATH
+      
     - name: Run tests
       working-directory: /tests
       run: npm run test
