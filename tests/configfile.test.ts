@@ -6,6 +6,8 @@ jest.mock('@actions/core');
 
 describe('loadConfigFiles', () => {
 
+    console.log("This is the dirname");
+    console.log(__dirname);
     it('throw when no config files are found', async () => {
         const promise = configfile.loadConfigFiles(__dirname, "missing.json", configfile.ConfigFormat.JSON, "."); 
 
