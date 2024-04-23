@@ -22,15 +22,16 @@ jobs:
 
     - name: Display the path
       shell: bash
-      run: echo $GITHUB_WORKSPACE
-
-    - name: Run tests
       working-directory: tests
-      run: npm run test
+      run: echo $GITHUB_WORKSPACE
 
     - name: Display the path
       shell: bash
       run: echo $GITHUB_WORKSPACE
+      
+    - name: Run tests
+      working-directory: tests
+      run: npm run test
 
     - name: Check linting errors
       run: npm run lint
