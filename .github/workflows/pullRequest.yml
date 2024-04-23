@@ -21,7 +21,6 @@ jobs:
       run: npm install
 
     - name: Run tests
-      working-directory: tests
       run: npm run test
 
     - name: Check linting errors
