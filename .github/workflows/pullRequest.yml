@@ -21,7 +21,7 @@ jobs:
       run: npm install
 
     - name: Run tests
-      working-directory: $GITHUB_WORKSPACE/tests
+      working-directory: tests
       run: npm run test
 
     - name: Check linting errors
