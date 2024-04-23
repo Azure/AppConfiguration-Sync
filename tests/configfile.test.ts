@@ -13,7 +13,7 @@ describe('loadConfigFiles', () => {
     })
 
     it('throw when config format is invalid', async () => {
-        const promise = configfile.loadConfigFiles(__dirname, "appsettings.json", -1, ".");
+        const promise = configfile.loadConfigFiles(__dirname, "appsettings.json", -1 as configfile.ConfigFormat, ".");
 
         await (expect(promise)).rejects.toThrowError(ParseError);
     })

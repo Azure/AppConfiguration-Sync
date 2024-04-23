@@ -272,8 +272,8 @@ describe('syncConfig', () => {
         expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenNthCalledWith(2, { key: "Key2", value: "Value2" });
         expect(core.setFailed).toBeCalledWith("Configuration sync failed.");
         expect(core.error).toHaveBeenCalledTimes(2);
-        expect(core.error).toHaveBeenNthCalledWith(1, "Failed to add key 'Key1' with label ''. Status code: 401 Unauthorized");
-        expect(core.error).toHaveBeenNthCalledWith(2, "Failed to add key 'Key2' with label ''. Status code: 401 Unauthorized");
+        expect(core.error).toHaveBeenNthCalledWith(1, "Failed to add key 'Key1' with label ''. Status code: 401");
+        expect(core.error).toHaveBeenNthCalledWith(2, "Failed to add key 'Key2' with label ''. Status code: 401");
     })
 
     it('fails to delete setting in strict mode', async () => {
@@ -300,8 +300,8 @@ describe('syncConfig', () => {
         expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenCalledWith({ key: "Key1", value: "Value1", label: "test" });
         expect(core.setFailed).toBeCalledWith("Configuration sync failed.");
         expect(core.error).toHaveBeenCalledTimes(2);
-        expect(core.error).toHaveBeenNthCalledWith(1, "Failed to delete key 'DeletedKey' with label 'test'. Status code: 409 Conflict");
-        expect(core.error).toHaveBeenNthCalledWith(2, "Failed to add key 'Key1' with label 'test'. Status code: 409 Conflict");
+        expect(core.error).toHaveBeenNthCalledWith(1, "Failed to delete key 'DeletedKey' with label 'test'. Status code: 409");
+        expect(core.error).toHaveBeenNthCalledWith(2, "Failed to add key 'Key1' with label 'test'. Status code: 409");
     })
 
     it('partially succeeded', async () => {
@@ -324,7 +324,7 @@ describe('syncConfig', () => {
         expect(AppConfigurationClient.prototype.setConfigurationSetting).toHaveBeenCalledWith({ key: "Key1", value: "Value1" });
         expect(core.setFailed).toBeCalledWith("Configuration sync partially succeeded.");
         expect(core.error).toHaveBeenCalledTimes(1);
-        expect(core.error).toHaveBeenNthCalledWith(1, "Failed to add key 'Key1' with label ''. Status code: 409 Conflict");
+        expect(core.error).toHaveBeenNthCalledWith(1, "Failed to add key 'Key1' with label ''. Status code: 409");
     })
 
     it('adds settings with different value types ', async () => {
