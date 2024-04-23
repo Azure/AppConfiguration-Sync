@@ -20,17 +20,8 @@ jobs:
     - name: Install dependencies
       run: npm install
 
-    - name: Display the path
-      shell: bash
-      working-directory: tests
-      run: echo $GITHUB_WORKSPACE
-
-    - name: Display the path
-      shell: bash
-      run: echo $GITHUB_WORKSPACE
-      
     - name: Run tests
-      working-directory: tests
+      working-directory: $GITHUB_WORKSPACE/tests
       run: npm run test
 
     - name: Check linting errors
