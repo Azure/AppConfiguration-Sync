@@ -32,5 +32,5 @@ inputs:
     description: 'Content type associated with the values'
     required: false    
 runs:
-  using: 'node12'
+  using: 'node20'
   main: 'lib/index.js'

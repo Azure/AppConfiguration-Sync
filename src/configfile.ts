@@ -3,12 +3,11 @@ import * as flat from 'flat';
 import * as fs from 'fs';
 import * as lodash from 'lodash';
 import * as jsyaml from "js-yaml";
-import * as util from 'util';
+import { glob } from 'glob';
 
 import { ArgumentError, ParseError } from '../src/errors';
 
 const dotproperties = require('dot-properties');
-const glob = util.promisify(require('glob'));
 
 /**
  * Supported formats for a config file
@@ -62,7 +61,7 @@ async function parseConfigFile(file: string, format: ConfigFormat): Promise<any>
             case ConfigFormat.JSON:
                 return JSON.parse(data);
             case ConfigFormat.YAML:
-                return jsyaml.safeLoad(data, { schema: jsyaml.FAILSAFE_SCHEMA });
+                return jsyaml.load(data, { schema: jsyaml.FAILSAFE_SCHEMA });
             case ConfigFormat.Properties:
                 return dotproperties.parse(data);
         }   
