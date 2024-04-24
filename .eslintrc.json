@@ -29,13 +29,22 @@
     "spaced-comment": ["error", "always", { "markers": ["/"] }],
     "space-infix-ops": ["error"],
     "use-isnan": "error",
-    "@typescript-eslint/class-name-casing": "error",
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/explicit-function-return-type": [
       "warn",
       { "allowExpressions": true, "allowTypedFunctionExpressions": true }
     ],
-    "@typescript-eslint/interface-name-prefix": ["error", "never"],
+    "@typescript-eslint/naming-convention": [
+      "error",
+      {
+        "selector": "interface",
+        "format": ["PascalCase"]
+      },
+      {
+        "selector": "class",
+        "format": ["PascalCase"]
+      }
+    ],
     "@typescript-eslint/no-unused-vars": "warn",
     "@typescript-eslint/no-useless-constructor": "error",
     "@typescript-eslint/no-use-before-define": "off",

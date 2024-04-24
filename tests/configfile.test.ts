@@ -1,6 +1,4 @@
 import * as configfile from '../src/configfile';
-import path from "path";
-
 import { ArgumentError, ParseError } from '../src/errors';
 
 jest.mock('@actions/core');
