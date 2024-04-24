@@ -9,13 +9,13 @@ describe('loadConfigFiles', () => {
     it('throw when no config files are found', async () => {
         const promise = configfile.loadConfigFiles(__dirname, "missing.json", configfile.ConfigFormat.JSON, "."); 
 
-        await (expect(promise)).rejects.toThrowError(ArgumentError);
+        await (expect(promise)).rejects.toThrow(ArgumentError);
     })
 
     it('throw when config format is invalid', async () => {
         const promise = configfile.loadConfigFiles(__dirname, "appsettings.json", -1 as configfile.ConfigFormat, ".");
 
-        await (expect(promise)).rejects.toThrowError(ParseError);
+        await (expect(promise)).rejects.toThrow(ParseError);
     })
 
     it('loads JSON with separator .', async () => {
@@ -43,7 +43,7 @@ describe('loadConfigFiles', () => {
     it('throw when JSON is invalid', async () => {
         const promise = configfile.loadConfigFiles(__dirname, "invalid.json", configfile.ConfigFormat.JSON, ".");
 
-        await (expect(promise)).rejects.toThrowError(ParseError);
+        await (expect(promise)).rejects.toThrow(ParseError);
     })
 
     it('loads YAML', async () => {
@@ -62,9 +62,9 @@ describe('loadConfigFiles', () => {
     })
 
     it('throw when YAML is invalid', async () => {
-        const promise = configfile.loadConfigFiles(__dirname, "invalid.YAML", configfile.ConfigFormat.YAML, ".");
+        const promise = configfile.loadConfigFiles(__dirname, "invalid.yaml", configfile.ConfigFormat.YAML, ".");
 
-        await (expect(promise)).rejects.toThrowError(ParseError);
+        await (expect(promise)).rejects.toThrow(ParseError);
     })
 
     it('loads .properties', async () => {
