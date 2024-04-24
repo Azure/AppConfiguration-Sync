@@ -63,7 +63,7 @@ describe('loadConfigFiles', () => {
     })
 
     it('throw when YAML is invalid', async () => {
-        const promise = configfile.loadConfigFiles(__dirname,"invalid.YAML", configfile.ConfigFormat.YAML, ".");
+        const promise = configfile.loadConfigFiles(__dirname, "invalid.yaml", configfile.ConfigFormat.YAML, ".");
 
         await (expect(promise)).rejects.toThrow(ParseError);
     })
