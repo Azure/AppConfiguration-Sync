@@ -32,7 +32,10 @@ export enum ConfigFormat {
 export async function loadConfigFiles(root: string, pattern: string, format: ConfigFormat, separator: string, depth?: number): Promise<any> {
     core.info('Loading configuration files');
 
+    console.log(root);
+    console.log(pattern);
     const files = await glob(pattern, { cwd: root, root: root, absolute: true });
+    console.log(files);
     if (files.length === 0) {
         throw new ArgumentError(`No configuration files found`);
     }

@@ -8,19 +8,19 @@ jest.mock('@actions/core');
 describe('loadConfigFiles', () => {
 
     it('throw when no config files are found', async () => {
-        const promise = configfile.loadConfigFiles(__dirname, path.resolve(__dirname, "missing.json"), configfile.ConfigFormat.JSON, "."); 
+        const promise = configfile.loadConfigFiles(__dirname, "missing.json", configfile.ConfigFormat.JSON, "."); 
 
         await (expect(promise)).rejects.toThrow(ArgumentError);
     })
 
     it('throw when config format is invalid', async () => {
-        const promise = configfile.loadConfigFiles(__dirname, path.resolve(__dirname, "appsettings.json") , -1 as configfile.ConfigFormat, ".");
+        const promise = configfile.loadConfigFiles(__dirname, "appsettings.json" , -1 as configfile.ConfigFormat, ".");
 
         await (expect(promise)).rejects.toThrow(ParseError);
     })
 
     it('loads JSON with separator .', async () => {
-        const config = await configfile.loadConfigFiles(__dirname, path.resolve(__dirname, "appsettings.json"), configfile.ConfigFormat.JSON, ".");
+        const config = await configfile.loadConfigFiles(__dirname, "appsettings.json", configfile.ConfigFormat.JSON, ".");
 
         expect(config).toEqual({
             "Key1": "Value 1",
@@ -31,7 +31,7 @@ describe('loadConfigFiles', () => {
     })
 
     it('loads JSON with separator -', async () => {
-        const config = await configfile.loadConfigFiles(__dirname, path.resolve(__dirname,"appsettings.json"), configfile.ConfigFormat.JSON, "-");
+        const config = await configfile.loadConfigFiles(__dirname, "appsettings.json", configfile.ConfigFormat.JSON, "-");
 
         expect(config).toEqual({
             "Key1": "Value 1",
@@ -42,13 +42,13 @@ describe('loadConfigFiles', () => {
     })
 
     it('throw when JSON is invalid', async () => {
-        const promise = configfile.loadConfigFiles(__dirname, path.resolve(__dirname,"invalid.json"), configfile.ConfigFormat.JSON, ".");
+        const promise = configfile.loadConfigFiles(__dirname, "invalid.json", configfile.ConfigFormat.JSON, ".");
 
         await (expect(promise)).rejects.toThrow(ParseError);
     })
 
     it('loads YAML', async () => {
-        const config = await configfile.loadConfigFiles(__dirname, path.resolve(__dirname, "config.yaml"), configfile.ConfigFormat.YAML, ":");
+        const config = await configfile.loadConfigFiles(__dirname, "config.yaml", configfile.ConfigFormat.YAML, ":");
 
         expect(config).toEqual({
             "Array:0:A": "1",
@@ -63,13 +63,13 @@ describe('loadConfigFiles', () => {
     })
 
     it('throw when YAML is invalid', async () => {
-        const promise = configfile.loadConfigFiles(__dirname, path.resolve(__dirname,"invalid.YAML"), configfile.ConfigFormat.YAML, ".");
+        const promise = configfile.loadConfigFiles(__dirname,"invalid.YAML", configfile.ConfigFormat.YAML, ".");
 
         await (expect(promise)).rejects.toThrow(ParseError);
     })
 
     it('loads .properties', async () => {
-        const config = await configfile.loadConfigFiles(__dirname, path.resolve(__dirname, "config.properties"), configfile.ConfigFormat.Properties, ".");
+        const config = await configfile.loadConfigFiles(__dirname, "config.properties", configfile.ConfigFormat.Properties, ".");
 
         expect(config).toEqual({
             "Key1": "Value 1",
@@ -79,7 +79,7 @@ describe('loadConfigFiles', () => {
     })
 
     it('loads multiple files', async () => {
-        const config = await configfile.loadConfigFiles(__dirname, path.resolve("{appsettings.json,appsettings2.json}"), configfile.ConfigFormat.JSON, ".");
+        const config = await configfile.loadConfigFiles(__dirname, "{appsettings.json,appsettings2.json}", configfile.ConfigFormat.JSON, ".");
 
         expect(config).toEqual({
             "Key1": "New Value",
@@ -94,7 +94,7 @@ describe('loadConfigFiles', () => {
     })
 
     it('loads with a max depth', async () => {
-        const config = await configfile.loadConfigFiles(__dirname, path.resolve(__dirname,"appsettings.json"), configfile.ConfigFormat.JSON, ".", 2);
+        const config = await configfile.loadConfigFiles(__dirname, "appsettings.json", configfile.ConfigFormat.JSON, ".", 2);
 
         expect(config).toEqual({
             "Key1": "Value 1",
