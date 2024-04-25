@@ -4,6 +4,13 @@ import { ConfigFormat } from './configfile';
 import { ArgumentError } from './errors';
 
 /**
+ * Represents the tags that apply to a setting
+ */
+export interface Tags {
+    [propertyName: string]: string;    
+}
+
+/**
  * Represents the inputs to the GitHub action
  */
 export interface Input {
@@ -18,13 +25,6 @@ export interface Input {
     depth?: number;
     tags?: Tags;
     contentType?: string;
-}
-
-/**
- * Represents the tags that apply to a setting
- */
-export interface Tags {
-    [propertyName: string]: string;    
 }
 
 /**

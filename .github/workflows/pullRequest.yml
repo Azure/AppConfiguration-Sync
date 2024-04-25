@@ -1,0 +1,32 @@
+name: PullRequest
+on: 
+  pull_request:
+    branches:
+        - main
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up node
+      uses: actions/setup-node@v2
+      with:
+        node-version: '20'
+
+    - name: Install dependencies
+      run: |
+        npm i -g @vercel/ncc
+        npm install 
+
+    - name: Compile files
+      run: npm run build
+
+    - name: Run tests
+      run: npm run test
+
+    - name: Check linting errors
+      run: npm run lint
