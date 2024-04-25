@@ -17,7 +17,9 @@ export interface Input {
     workspace: string;
     configFile: string;
     format: ConfigFormat;
-    connectionString: string;
+    authType: string;
+    connectionString?: string;
+    endpoint?: string;
     separator: string;
     strict: boolean;
     prefix?: string;
@@ -35,6 +37,8 @@ export function getInput(): Input {
         workspace:          getWorkspace(),
         configFile:         getRequiredInputString('configurationFile'),
         format:             getFormat(),
+        authType:           getAuthType(),
+        endpoint:           getNonRequiredInputString('endpoint'),
         connectionString:   getConnectionString(),
         separator:          getSeparator(),
         strict:             getStrict(),
@@ -82,34 +86,44 @@ function getFormat(): ConfigFormat {
     }
 }
 
-function getConnectionString(): string {
-    const connectionString = getRequiredInputString('connectionString');
+function getAuthType(): string {
+    const authType = getNonRequiredInputString("authType");
+    if (!authType) {
+        return 'ConnectionString';
+    }
+    return authType;
+}
 
-    const segments = connectionString.split(";");
-    let valid = false;
+function getConnectionString(): string | undefined {
+    const connectionString = getNonRequiredInputString('connectionString');
 
-    if (segments.length === 3) {
-        let hasEndpoint = false;
-        let hasId = false;
-        let hasSecret = false;
+    if (connectionString) {
+        const segments = connectionString.split(";");
+        let valid = false;
 
-        for (const segment of segments) {
-            if (segment.startsWith('Endpoint=')) {
-                hasEndpoint = true;
-            } else if (segment.startsWith('Id=')) {
-                hasId = true;
-            } else if (segment.startsWith('Secret=')) {
-                hasSecret = true;
+        if (segments.length === 3) {
+            let hasEndpoint = false;
+            let hasId = false;
+            let hasSecret = false;
+
+            for (const segment of segments) {
+                if (segment.startsWith('Endpoint=')) {
+                    hasEndpoint = true;
+                } else if (segment.startsWith('Id=')) {
+                    hasId = true;
+                } else if (segment.startsWith('Secret=')) {
+                    hasSecret = true;
+                }
             }
+
+            valid = hasEndpoint && hasId && hasSecret;
         }
-        
-        valid = hasEndpoint && hasId && hasSecret;
-    }
 
-    if (!valid) {
-        throw new ArgumentError(`Connection string is invalid.`);
-    }
+        if (!valid) {
+            throw new ArgumentError(`Connection string is invalid.`);
+        }
 
+    }
     return connectionString;
 }
 

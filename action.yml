@@ -7,9 +7,15 @@ inputs:
   format:
     description: 'Format of the configuration file. Valid values are: json, yaml, properties'
     required: true
+  authType:
+    description: 'The authentication type to used'
+    required: false
   connectionString:
     description: 'Connection string for the App Configuration instance'
-    required: true
+    required: false
+  endpoint:
+    description: 'Endpoint for the App Configuration instance'
+    required: false
   separator:
     description: 'Separator used when flattening the configuration file to key-value pairs'
     required: true

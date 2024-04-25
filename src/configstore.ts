@@ -1,8 +1,9 @@
 import * as core from '@actions/core';
 import { AppConfigurationClient, ConfigurationSettingId, SetConfigurationSettingParam } from '@azure/app-configuration';
 
-import { getErrorMessage } from './errors';
+import { ArgumentError, getErrorMessage } from './errors';
 import { Tags } from './input';
+import { DefaultAzureCredential } from '@azure/identity';
 
 const userAgentPrefix = "GitHub-AppConfiguration-Sync/1.0.0";
 
@@ -17,13 +18,24 @@ const userAgentPrefix = "GitHub-AppConfiguration-Sync/1.0.0";
  * @param tags Tags applied to the modified settings.
  * @param contentType Content type applied to the settings.
  */
-export async function syncConfig(config: any, connectionString: string, strict: boolean, label?: string, prefix?: string, tags?: Tags, contentType?: string): Promise<void> {
+export async function syncConfig(config: any, strict: boolean, authType: string, endpoint?: string, connectionString?: string, label?: string, prefix?: string, tags?: Tags, contentType?: string): Promise<void> {
     const appConfigurationOptions = {
         userAgentOptions: {
             userAgentPrefix: userAgentPrefix
         }
     };
-    const client = new AppConfigurationClient(connectionString, appConfigurationOptions);
+
+    let client: AppConfigurationClient;
+    if (authType === "ServicePrincipal" && endpoint) {
+        const credential = new DefaultAzureCredential()
+        client = new AppConfigurationClient(endpoint, credential)
+    } else  {
+        if (connectionString) {
+        client = new AppConfigurationClient(connectionString, appConfigurationOptions);
+        } else {
+            throw new ArgumentError("Provide auth method");
+        }
+    }
 
     core.info('Determining which keys to sync');
     const settingsToAdd = getSettingsToAdd(config, label, prefix, tags, contentType);
