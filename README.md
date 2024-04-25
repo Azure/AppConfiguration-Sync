@@ -11,7 +11,7 @@ To start using this GitHub action, go to your repository and click the "Actions"
 This Action supports three ways of authenticating to App Configuration. The Action determines which method to use based on the `auth-type` setting. If this setting is absent, the connection string method is used as default.
 1. **Connection string**: The connection string embeds credentials for accessing the App Configuration instance. You can retrieve it from the Azure Portal or as output from your Infrastructure as Code tool.
 1. **Service principal**: In this case you supply an endpoint such as https://example-appconfig-instance.azconfig.io, a tenant ID, client ID and client Secret.
-1. **Federated Workload Identity**: You must have [federated your GitHub Actions environment or branch with Azure Entra ID](https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-azure) previously. You must specify the endpoint, tenant ID and client ID as with the service principal case. The secret is not needed; the Action will exchange your GitHub token for an Entra ID token scoped to the App Configuration instance.
+1. **Federated (Workload) Identity**: You must have [federated your GitHub Actions environment or branch with Azure Entra ID](https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-azure) previously. You must specify the endpoint, tenant ID and client ID as with the service principal case. The secret is not needed; the Action will exchange your GitHub token for an Entra ID token scoped to the App Configuration instance.
 
 Sensitive information, such as the connection string for the App Configuration instance or the Client Secret of the service principal should be stored as a [secret](https://help.github.com/en/articles/virtual-environments-for-github-actions#creating-and-using-secrets-encrypted-variables) in the GitHub repository.  The secret can then be used in the workflow.
 
@@ -64,7 +64,7 @@ The following snippet shows how to push a YAML file using a service principal.
 Finally, this snippet shows how to push a properties file using federated identity:
 ```yaml
     steps:
-      - name: 'Push config settings using identity'
+      - name: 'Push config settings using federated identity'
         uses: azure/appconfiguration-sync@v1
         with:
           configurationFile: 'application.properties'

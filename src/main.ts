@@ -1,5 +1,4 @@
 import * as core from '@actions/core';
-import { AppConfigurationClient } from '@azure/app-configuration';
 
 import { loadConfigFiles } from './configfile';
 import { syncConfig, clientFromConnectionString, clientFromIdentityFederation, clientFromServicePrincipal } from './configstore';
@@ -16,7 +15,7 @@ async function main(): Promise<void> {
             case 'connection-string':
                 client = clientFromConnectionString(input.connectionInfo);
                 break;
-            case 'identity':
+            case 'workload-identity':
                 client = await clientFromIdentityFederation(input.connectionInfo);
                 break;
             case 'service-principal':

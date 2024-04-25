@@ -10,30 +10,13 @@ export interface Tags {
     [propertyName: string]: string;    
 }
 
-/**
- * Represents the inputs to the GitHub action
- */
-export interface Input {
-    workspace: string;
-    configFile: string;
-    format: ConfigFormat;
-    connectionInfo: ConnectionString | Identity | ServicePrincipal;
-    separator: string;
-    strict: boolean;
-    prefix?: string;
-    label?: string;
-    depth?: number;
-    tags?: Tags;
-    contentType?: string;
-}
-
 export interface ConnectionString {
     type: 'connection-string';
     connectionString: string;
 }
 
-export interface Identity {
-    type: 'identity';
+export interface WorkloadIdentity {
+    type: 'workload-identity';
     endpoint: string;
     clientId: string;
     tenantId: string;
@@ -49,11 +32,28 @@ export interface ServicePrincipal {
 }
 
 /**
+ * Represents the inputs to the GitHub action
+ */
+export interface Input {
+    workspace: string;
+    configFile: string;
+    format: ConfigFormat;
+    connectionInfo: ConnectionString | WorkloadIdentity | ServicePrincipal;
+    separator: string;
+    strict: boolean;
+    prefix?: string;
+    label?: string;
+    depth?: number;
+    tags?: Tags;
+    contentType?: string;
+}
+
+/**
  * Obtain the action inputs from the GitHub environment
  */
 export function getInput(): Input {
     let connectionInfo;
-    switch (getRequiredInputString('auth-type')) {
+    switch (getNonRequiredInputString('auth-type') ?? 'CONNECTION_STRING') {
         case 'CONNECTION_STRING':
             connectionInfo = getConnectionStringConnectionInfo();
             break;
@@ -119,7 +119,7 @@ function getFormat(): ConfigFormat {
 }
 
 function getConnectionStringConnectionInfo(): ConnectionString {
-    let connectionString = getRequiredInputString('connectionString');
+    const connectionString = getRequiredInputString('connectionString');
 
     const segments = connectionString.split(";");
     let valid = false;
@@ -222,15 +222,16 @@ function getTags(): Tags | undefined {
     return parsedTags;
 }
 
-function getWorkloadIdentityConnectionInfo(): Identity {
+function getWorkloadIdentityConnectionInfo(): WorkloadIdentity {
   const endpoint = getNonRequiredInputString("endpoint");
   const clientId = getNonRequiredInputString("client-id");
   const tenantId = getNonRequiredInputString("tenant-id");
   const audience = getRequiredInputString("audience");
-  if (!endpoint || !clientId || !tenantId)
+  if (!endpoint || !clientId || !tenantId) {
       throw new ArgumentError(`Need all of { endpoint, client-id, tenant-id } for auth-type FEDERATED_IDENTITY`)
+  }
 
-  return { type: 'identity', endpoint, clientId, tenantId, audience };
+  return { type: 'workload-identity', endpoint, clientId, tenantId, audience };
 }
 
 function getServicePrincipalConnectionInfo(): ServicePrincipal {

@@ -2,7 +2,7 @@ import * as core from '@actions/core';
 
 import { ArgumentError } from '../src/errors';
 import { ConfigFormat } from '../src/configfile';
-import { getInput, ConnectionString, Identity } from '../src/input'
+import { getInput, ConnectionString, WorkloadIdentity } from '../src/input'
 
 let mockInput: any;
 
@@ -127,8 +127,8 @@ describe('input', () => {
           Object.assign(mockInput, { 'auth-type': 'FEDERATED_IDENTITY', endpoint: mock_endpoint, 'client-id': mock_client_id, 'tenant-id': mock_tenant_id });
 
           const input = getInput();
-          expect(input.connectionInfo.type).toBe('identity');
-          const { endpoint, tenantId, clientId } = input.connectionInfo as Identity;
+          expect(input.connectionInfo.type).toBe('workload-identity');
+          const { endpoint, tenantId, clientId } = input.connectionInfo as WorkloadIdentity;
           expect(endpoint).toBe(mock_endpoint);
           expect(tenantId).toBe(mock_tenant_id);
           expect(clientId).toBe(mock_client_id);
