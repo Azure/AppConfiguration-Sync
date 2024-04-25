@@ -10,6 +10,27 @@ export interface Tags {
     [propertyName: string]: string;    
 }
 
+export interface ConnectionString {
+    type: 'connection-string';
+    connectionString: string;
+}
+
+export interface WorkloadIdentity {
+    type: 'workload-identity';
+    endpoint: string;
+    clientId: string;
+    tenantId: string;
+    audience: string;
+}
+
+export interface ServicePrincipal {
+    type: 'service-principal';
+    endpoint: string;
+    clientId: string;
+    clientSecret: string;
+    tenantId: string;
+}
+
 /**
  * Represents the inputs to the GitHub action
  */
@@ -17,7 +38,7 @@ export interface Input {
     workspace: string;
     configFile: string;
     format: ConfigFormat;
-    connectionString: string;
+    connectionInfo: ConnectionString | WorkloadIdentity | ServicePrincipal;
     separator: string;
     strict: boolean;
     prefix?: string;
@@ -31,11 +52,26 @@ export interface Input {
  * Obtain the action inputs from the GitHub environment
  */
 export function getInput(): Input {
+    let connectionInfo;
+    switch (getNonRequiredInputString('auth-type') ?? 'CONNECTION_STRING') {
+        case 'CONNECTION_STRING':
+            connectionInfo = getConnectionStringConnectionInfo();
+            break;
+        case 'FEDERATED_IDENTITY':
+            connectionInfo = getWorkloadIdentityConnectionInfo();
+            break;
+        case 'SERVICE_PRINCIPAL':
+            connectionInfo = getServicePrincipalConnectionInfo();
+            break;
+        default:
+            throw new ArgumentError(`Invalid 'auth-type', expected one of { CONNECTION_STRING, FEDERATED_IDENTITY, SERVICE_PRINCIPAL }`);
+    }
+
     return {
         workspace:          getWorkspace(),
         configFile:         getRequiredInputString('configurationFile'),
+        connectionInfo:     connectionInfo,
         format:             getFormat(),
-        connectionString:   getConnectionString(),
         separator:          getSeparator(),
         strict:             getStrict(),
         prefix:             getNonRequiredInputString('prefix'),
@@ -82,7 +118,7 @@ function getFormat(): ConfigFormat {
     }
 }
 
-function getConnectionString(): string {
+function getConnectionStringConnectionInfo(): ConnectionString {
     const connectionString = getRequiredInputString('connectionString');
 
     const segments = connectionString.split(";");
@@ -107,10 +143,10 @@ function getConnectionString(): string {
     }
 
     if (!valid) {
-        throw new ArgumentError(`Connection string is invalid.`);
+        throw new ArgumentError(`Connection string is invalid: need Endpoint, Id and Secret segments.`);
     }
 
-    return connectionString;
+    return { type: 'connection-string', connectionString };
 }
 
 function getSeparator(): string {
@@ -184,4 +220,27 @@ function getTags(): Tags | undefined {
     }
 
     return parsedTags;
+}
+
+function getWorkloadIdentityConnectionInfo(): WorkloadIdentity {
+  const endpoint = getNonRequiredInputString("endpoint");
+  const clientId = getNonRequiredInputString("client-id");
+  const tenantId = getNonRequiredInputString("tenant-id");
+  const audience = getRequiredInputString("audience");
+  if (!endpoint || !clientId || !tenantId) {
+      throw new ArgumentError(`Need all of { endpoint, client-id, tenant-id } for auth-type FEDERATED_IDENTITY`)
+  }
+
+  return { type: 'workload-identity', endpoint, clientId, tenantId, audience };
+}
+
+function getServicePrincipalConnectionInfo(): ServicePrincipal {
+  const endpoint = getNonRequiredInputString("endpoint");
+  const clientId = getNonRequiredInputString("client-id");
+  const clientSecret = getNonRequiredInputString("client-secret");
+  const tenantId = getNonRequiredInputString("tenant-id");
+  if (!endpoint || !clientId || !clientSecret || !tenantId)
+      throw new ArgumentError(`Need all of { endpoint, client-id, client-secret, tenant-id } for auth-type SERVICE_PRINCIPAL`)
+
+  return { type: 'service-principal', endpoint, clientId, clientSecret, tenantId };
 }
