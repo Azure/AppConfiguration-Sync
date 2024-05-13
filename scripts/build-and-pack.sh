@@ -21,7 +21,3 @@ npm run build
 
 echo "npm run test"
 npm run test
-
-# Create a tarball.
-echo "npm pack"
-npm pack
