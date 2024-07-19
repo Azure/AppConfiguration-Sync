@@ -11,9 +11,11 @@ async function main(): Promise<void> {
         const config = await loadConfigFiles(input.workspace, input.configFile, input.format, input.separator, input.depth);
 
         await syncConfig(config, input.connectionString, input.strict, input.label, input.prefix, input.tags, input.contentType);
+        core.warning("THIS ACTION IS DEPRECATED. Use azure/cli@v2 to replace this action. Find it here: https://github.com/Azure/cli");
     } catch (error) {
         core.setFailed(getErrorMessage(error));
-    }
+        core.warning("THIS ACTION IS DEPRECATED. Use azure/cli@v2 to replace this action. Find it here: https://github.com/Azure/cli");
+    }   
 }
 
 main();

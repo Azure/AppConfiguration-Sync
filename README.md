@@ -1,3 +1,7 @@
+# Deprecation Notice
+
+This Action is deprecated. Instead, you can set up ongoing configuration file import using [Azure CLI](https://learn.microsoft.com/en-us/azure/azure-app-configuration/push-kv-github-action) GitHub action, which offers full capabilities for file importing to your App Configuration store. 
+
 # Azure App Configuration Sync
 
 This action syncs configuration files in the repository to an App Configuration instance. This enables scenarios where the App Configuration instance is automatically updated when changes are made through GitHub workflows.
