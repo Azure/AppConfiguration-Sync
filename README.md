@@ -1,6 +1,6 @@
 # Deprecation Notice
 
-This GitHub action has been deprecated. The Azure CLI for Azure App Configuration provides full capabilities for importing configuration files into Azure App Configuration. Follow [these instructions](https://learn.microsoft.com/en-us/azure/azure-app-configuration/push-kv-github-action) to set it up in your GitHub actions. 
+This GitHub action has been deprecated. The Azure CLI for Azure App Configuration provides full capabilities for importing configuration files into Azure App Configuration. Follow [these instructions](https://aka.ms/appconfig/githubactions) to set it up in your GitHub actions. 
 
 # Azure App Configuration Sync
 
