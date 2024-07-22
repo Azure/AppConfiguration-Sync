@@ -14,7 +14,7 @@ async function main(): Promise<void> {
     } catch (error) {
         core.setFailed(getErrorMessage(error));
     }
-    core.warning("THIS ACTION IS DEPRECATED. Use azure/cli@v2 to replace this action. Find it here: https://github.com/Azure/cli");
+    core.warning("THIS ACTION IS DEPRECATED. Follow this guide to import your configuration into Azure App Configuration using GitHub Actions: https://aka.ms/appconfig/githubactions");
 }
 
 main();
