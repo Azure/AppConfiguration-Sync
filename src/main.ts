@@ -14,6 +14,7 @@ async function main(): Promise<void> {
     } catch (error) {
         core.setFailed(getErrorMessage(error));
     }
+    core.warning("THIS ACTION IS DEPRECATED. Follow this guide to import your configuration into Azure App Configuration using GitHub Actions: https://aka.ms/appconfig/githubactions");
 }
 
 main();
