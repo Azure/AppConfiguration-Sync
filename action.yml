@@ -1,5 +1,5 @@
-name: 'Azure App Configuration Sync'
-description: 'Sync configuration in the repo to an App Configuration instance'
+name: 'Azure App Configuration Sync (Deprecated)'
+description: 'DEPRECATED: This GitHub action has been deprecated. The Azure CLI for Azure App Configuration provides full capabilities for importing configuration files into Azure App Configuration. Follow these instructions https://aka.ms/appconfig/githubactions to set it up in your GitHub actions.'
 inputs:
   configurationFile:
     description: 'Path to the configuration file in the repo, relative to the repo root. Also supports glob patterns and multiple files'
